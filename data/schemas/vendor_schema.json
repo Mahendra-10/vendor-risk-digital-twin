@@ -1,0 +1,119 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Vendor Dependency Schema",
+  "description": "Schema for vendor dependency data model",
+  "type": "object",
+  "required": ["vendors", "business_metrics"],
+  "properties": {
+    "vendors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["vendor_id", "name", "category", "criticality", "services"],
+        "properties": {
+          "vendor_id": {
+            "type": "string",
+            "pattern": "^vendor_[0-9]{3}$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "payment_processor",
+              "authentication",
+              "communication",
+              "monitoring",
+              "data_storage"
+            ]
+          },
+          "criticality": {
+            "type": "string",
+            "enum": ["critical", "high", "medium", "low"]
+          },
+          "services": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "service_id",
+                "name",
+                "type",
+                "gcp_resource",
+                "environment_variables",
+                "business_processes"
+              ],
+              "properties": {
+                "service_id": {
+                  "type": "string",
+                  "pattern": "^svc_[0-9]{3}$"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["cloud_function", "cloud_run", "app_engine", "gke"]
+                },
+                "gcp_resource": {
+                  "type": "string"
+                },
+                "environment_variables": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "business_processes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "minItems": 1
+                },
+                "rpm": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "customers_affected": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "business_metrics": {
+      "type": "object",
+      "required": [
+        "total_customers",
+        "revenue_per_hour",
+        "transactions_per_hour",
+        "average_transaction_value"
+      ],
+      "properties": {
+        "total_customers": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "revenue_per_hour": {
+          "type": "number",
+          "minimum": 0
+        },
+        "transactions_per_hour": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "average_transaction_value": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}
+

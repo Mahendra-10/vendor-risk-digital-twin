@@ -1,0 +1,77 @@
+# Vendor Risk Digital Twin - Configuration
+
+# Neo4j Graph Database
+neo4j:
+  uri: "${NEO4J_URI}"
+  user: "${NEO4J_USER}"
+  password: "${NEO4J_PASSWORD}"
+  database: "neo4j"
+  max_connection_lifetime: 3600
+  max_connection_pool_size: 50
+
+# Google Cloud Platform
+gcp:
+  project_id: "${GCP_PROJECT_ID}"
+  region: "${GCP_REGION}"
+  service_account_key: "${GCP_SERVICE_ACCOUNT_KEY_PATH}"
+  
+  # Resources to discover
+  resources:
+    - cloud_functions
+    - cloud_run
+    - bigquery
+    - secret_manager
+    - cloud_sql
+    - gcs_buckets
+
+# Vendor Categories
+vendors:
+  payment_processors:
+    - Stripe
+    - PayPal
+    - Square
+  
+  authentication:
+    - Auth0
+    - Okta
+    - Firebase Auth
+  
+  communication:
+    - SendGrid
+    - Twilio
+    - Mailgun
+  
+  monitoring:
+    - Datadog
+    - New Relic
+    - Sentry
+  
+  data_storage:
+    - MongoDB Atlas
+    - Elasticsearch Cloud
+    - Redis Cloud
+
+# Simulation Settings
+simulation:
+  # Failure duration options (hours)
+  duration_options: [1, 2, 4, 8, 24, 72]
+  
+  # Impact calculation weights
+  weights:
+    operational: 0.4
+    financial: 0.35
+    compliance: 0.25
+  
+  # Business metrics
+  business:
+    revenue_per_hour: 150000
+    customer_count: 50000
+    transactions_per_hour: 5000
+
+# Logging
+logging:
+  level: "${LOG_LEVEL}"
+  format: "json"
+  output: "stdout"
+  file: "logs/vendor_risk.log"
+

@@ -1,0 +1,33 @@
+# Customer Validation (Phase 2: Weeks 4-5)
+
+Store anonymized customer interview data here.
+
+## Suggested Structure
+
+```
+customer_interviews/
+├── transcripts/           # Interview transcripts (GITIGNORED - sensitive)
+├── interview_guide.docx   # Interview question template
+├── consent_form.pdf       # Interview consent form
+├── analysis/
+│   ├── themes.xlsx        # Thematic analysis
+│   └── quotes.docx        # Key quotes by theme
+└── customer_validation_report.pdf  # Final 8-page report
+```
+
+## Key Deliverables
+
+1. Interview guide and consent forms
+2. 8-10 anonymized interview transcripts
+3. Thematic analysis spreadsheet
+4. Customer validation report (8 pages)
+5. Willingness-to-pay analysis
+6. ROI calculations
+
+## Privacy Note
+
+⚠️ All customer data must be anonymized before storing in Git.
+- Use codes: C1, C2, C3 instead of company names
+- Remove identifying information
+- Get written consent for any quotes used in paper
+

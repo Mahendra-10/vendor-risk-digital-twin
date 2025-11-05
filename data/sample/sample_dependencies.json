@@ -1,0 +1,149 @@
+{
+  "vendors": [
+    {
+      "vendor_id": "vendor_001",
+      "name": "Stripe",
+      "category": "payment_processor",
+      "criticality": "critical",
+      "services": [
+        {
+          "service_id": "svc_001",
+          "name": "payment-api",
+          "type": "cloud_function",
+          "gcp_resource": "projects/demo-project/locations/us-central1/functions/payment-api",
+          "environment_variables": [
+            "STRIPE_API_KEY",
+            "STRIPE_WEBHOOK_SECRET"
+          ],
+          "business_processes": [
+            "checkout",
+            "refunds",
+            "subscription_billing"
+          ],
+          "rpm": 500,
+          "customers_affected": 50000
+        },
+        {
+          "service_id": "svc_002",
+          "name": "checkout-service",
+          "type": "cloud_run",
+          "gcp_resource": "projects/demo-project/locations/us-central1/services/checkout-service",
+          "environment_variables": [
+            "STRIPE_PUBLISHABLE_KEY"
+          ],
+          "business_processes": [
+            "checkout"
+          ],
+          "rpm": 800,
+          "customers_affected": 50000
+        }
+      ]
+    },
+    {
+      "vendor_id": "vendor_002",
+      "name": "Auth0",
+      "category": "authentication",
+      "criticality": "critical",
+      "services": [
+        {
+          "service_id": "svc_003",
+          "name": "user-auth",
+          "type": "cloud_function",
+          "gcp_resource": "projects/demo-project/locations/us-central1/functions/user-auth",
+          "environment_variables": [
+            "AUTH0_DOMAIN",
+            "AUTH0_CLIENT_ID",
+            "AUTH0_CLIENT_SECRET"
+          ],
+          "business_processes": [
+            "user_login",
+            "user_registration",
+            "sso"
+          ],
+          "rpm": 1200,
+          "customers_affected": 50000
+        }
+      ]
+    },
+    {
+      "vendor_id": "vendor_003",
+      "name": "SendGrid",
+      "category": "communication",
+      "criticality": "high",
+      "services": [
+        {
+          "service_id": "svc_004",
+          "name": "email-notification-service",
+          "type": "cloud_function",
+          "gcp_resource": "projects/demo-project/locations/us-central1/functions/email-notifications",
+          "environment_variables": [
+            "SENDGRID_API_KEY"
+          ],
+          "business_processes": [
+            "order_confirmation",
+            "password_reset",
+            "marketing_emails"
+          ],
+          "rpm": 300,
+          "customers_affected": 50000
+        }
+      ]
+    },
+    {
+      "vendor_id": "vendor_004",
+      "name": "Datadog",
+      "category": "monitoring",
+      "criticality": "high",
+      "services": [
+        {
+          "service_id": "svc_005",
+          "name": "monitoring-agent",
+          "type": "cloud_run",
+          "gcp_resource": "projects/demo-project/locations/us-central1/services/monitoring-agent",
+          "environment_variables": [
+            "DATADOG_API_KEY",
+            "DATADOG_APP_KEY"
+          ],
+          "business_processes": [
+            "system_monitoring",
+            "alerting",
+            "log_aggregation"
+          ],
+          "rpm": 100,
+          "customers_affected": 0
+        }
+      ]
+    },
+    {
+      "vendor_id": "vendor_005",
+      "name": "MongoDB Atlas",
+      "category": "data_storage",
+      "criticality": "critical",
+      "services": [
+        {
+          "service_id": "svc_006",
+          "name": "user-data-service",
+          "type": "cloud_run",
+          "gcp_resource": "projects/demo-project/locations/us-central1/services/user-data-service",
+          "environment_variables": [
+            "MONGODB_URI",
+            "MONGODB_DATABASE"
+          ],
+          "business_processes": [
+            "user_profile_management",
+            "data_persistence"
+          ],
+          "rpm": 2000,
+          "customers_affected": 50000
+        }
+      ]
+    }
+  ],
+  "business_metrics": {
+    "total_customers": 50000,
+    "revenue_per_hour": 150000,
+    "transactions_per_hour": 5000,
+    "average_transaction_value": 30
+  }
+}
+

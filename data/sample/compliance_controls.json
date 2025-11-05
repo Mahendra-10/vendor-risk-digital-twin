@@ -1,0 +1,61 @@
+{
+  "compliance_baseline": {
+    "soc2_score": 0.92,
+    "nist_score": 0.88,
+    "iso27001_score": 0.90
+  },
+  "control_mappings": {
+    "Stripe": {
+      "soc2_controls": ["CC6.6", "CC7.2"],
+      "nist_controls": ["PR.DS-2"],
+      "iso27001_controls": ["A.5.14", "A.8.12"]
+    },
+    "Auth0": {
+      "soc2_controls": ["CC6.1"],
+      "nist_controls": ["PR.AC-1"],
+      "iso27001_controls": ["A.5.15"]
+    },
+    "SendGrid": {
+      "soc2_controls": ["CC6.6"],
+      "nist_controls": ["ID.AM-3"],
+      "iso27001_controls": ["A.5.14"]
+    },
+    "Datadog": {
+      "soc2_controls": ["CC7.2"],
+      "nist_controls": ["DE.CM-1", "DE.AE-3"],
+      "iso27001_controls": ["A.8.16"]
+    },
+    "MongoDB Atlas": {
+      "soc2_controls": ["A1.2"],
+      "nist_controls": ["PR.DS-2", "RC.RP-1"],
+      "iso27001_controls": ["A.5.23"]
+    }
+  },
+  "impact_weights": {
+    "soc2": {
+      "CC6.1": 0.15,
+      "CC6.6": 0.12,
+      "CC7.2": 0.10,
+      "CC8.1": 0.08,
+      "A1.2": 0.10
+    },
+    "nist": {
+      "ID.AM-2": 0.08,
+      "ID.AM-3": 0.10,
+      "PR.AC-1": 0.15,
+      "PR.DS-2": 0.12,
+      "DE.CM-1": 0.10,
+      "DE.AE-3": 0.08,
+      "RS.CO-2": 0.09,
+      "RC.RP-1": 0.10
+    },
+    "iso27001": {
+      "A.5.14": 0.12,
+      "A.5.15": 0.15,
+      "A.8.16": 0.10,
+      "A.5.23": 0.13,
+      "A.8.12": 0.11
+    }
+  }
+}
+

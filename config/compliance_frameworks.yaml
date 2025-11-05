@@ -1,0 +1,175 @@
+# Compliance Framework Mappings
+# Maps vendor dependencies to compliance controls
+
+soc2:
+  name: "SOC 2 Type II"
+  controls:
+    CC6.1:
+      name: "Logical and Physical Access Controls"
+      description: "System access is restricted to authorized users"
+      vendors:
+        - Auth0
+        - Okta
+      weight: 0.15
+    
+    CC6.6:
+      name: "Transmission of Confidential Information"
+      description: "Confidential info transmitted securely"
+      vendors:
+        - Stripe
+        - SendGrid
+        - Twilio
+      weight: 0.12
+    
+    CC7.2:
+      name: "System Monitoring"
+      description: "System is monitored for anomalies"
+      vendors:
+        - Datadog
+        - New Relic
+        - Sentry
+      weight: 0.10
+    
+    CC8.1:
+      name: "Change Management"
+      description: "System changes authorized and tracked"
+      vendors:
+        - GitHub
+        - GitLab
+      weight: 0.08
+    
+    A1.2:
+      name: "Backup and Recovery"
+      description: "Data backup and recovery procedures"
+      vendors:
+        - MongoDB Atlas
+        - Redis Cloud
+      weight: 0.10
+
+nist_csf:
+  name: "NIST Cybersecurity Framework"
+  functions:
+    identify:
+      ID.AM-2:
+        name: "Software platforms and applications inventory"
+        vendors:
+          - All
+        weight: 0.08
+      
+      ID.AM-3:
+        name: "Organizational communication and data flows"
+        vendors:
+          - SendGrid
+          - Twilio
+        weight: 0.10
+    
+    protect:
+      PR.AC-1:
+        name: "Identities and credentials management"
+        vendors:
+          - Auth0
+          - Okta
+        weight: 0.15
+      
+      PR.DS-2:
+        name: "Data-in-transit protection"
+        vendors:
+          - Stripe
+          - MongoDB Atlas
+        weight: 0.12
+    
+    detect:
+      DE.CM-1:
+        name: "Network monitoring"
+        vendors:
+          - Datadog
+          - New Relic
+        weight: 0.10
+      
+      DE.AE-3:
+        name: "Event data aggregation and correlation"
+        vendors:
+          - Sentry
+          - Datadog
+        weight: 0.08
+    
+    respond:
+      RS.CO-2:
+        name: "Incidents reported consistent with requirements"
+        vendors:
+          - Sentry
+          - PagerDuty
+        weight: 0.09
+    
+    recover:
+      RC.RP-1:
+        name: "Recovery plan executed during/after cybersecurity incident"
+        vendors:
+          - MongoDB Atlas
+          - Redis Cloud
+        weight: 0.10
+
+iso27001:
+  name: "ISO/IEC 27001:2022"
+  controls:
+    A.5.14:
+      name: "Information transfer"
+      description: "Transfer of information is restricted"
+      vendors:
+        - SendGrid
+        - Twilio
+        - Stripe
+      weight: 0.12
+    
+    A.5.15:
+      name: "Access control"
+      description: "Rules to control physical/logical access"
+      vendors:
+        - Auth0
+        - Okta
+      weight: 0.15
+    
+    A.8.16:
+      name: "Monitoring activities"
+      description: "Networks, systems monitored for anomalies"
+      vendors:
+        - Datadog
+        - New Relic
+        - Sentry
+      weight: 0.10
+    
+    A.5.23:
+      name: "Information security for use of cloud services"
+      description: "Cloud service usage secured"
+      vendors:
+        - MongoDB Atlas
+        - Elasticsearch Cloud
+        - Redis Cloud
+      weight: 0.13
+    
+    A.8.12:
+      name: "Data leakage prevention"
+      description: "Detect and prevent unauthorized disclosure"
+      vendors:
+        - Stripe
+        - PayPal
+      weight: 0.11
+
+# Vendor Criticality Ratings
+vendor_criticality:
+  critical:
+    - Stripe
+    - Auth0
+    - MongoDB Atlas
+  high:
+    - SendGrid
+    - Datadog
+    - Okta
+  medium:
+    - Twilio
+    - New Relic
+    - Redis Cloud
+  low:
+    - Mailgun
+    - Sentry
+

@@ -6,6 +6,8 @@ The Vendor Risk Digital Twin is a cloud-native framework that models vendor depe
 
 ## System Architecture
 
+### High-Level Architecture
+
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                     Vendor Risk Digital Twin                     │
@@ -28,6 +30,49 @@ The Vendor Risk Digital Twin is a cloud-native framework that models vendor depe
 │  API Keys       │      │  - SUPPORTS      │      │  - Reports   │
 │                 │      │  - SATISFIES     │      │  - Metrics   │
 └─────────────────┘      └──────────────────┘      └──────────────┘
+```
+
+### Layered Architecture View
+
+```
+┌───────────────────────────────────────────────────────────────────┐
+│                      PRESENTATION LAYER                           │
+│  ┌─────────────────────┐  ┌──────────────────┐                  │
+│  │  Neo4j Browser UI   │  │  CLI Interface   │                  │
+│  │  (Visualization)    │  │  (Scripts)       │                  │
+│  └─────────────────────┘  └──────────────────┘                  │
+└───────────────────────────────────────────────────────────────────┘
+                              ↕
+┌───────────────────────────────────────────────────────────────────┐
+│                      APPLICATION LAYER                            │
+│  ┌────────────────┐  ┌────────────────┐  ┌──────────────────┐  │
+│  │   Discovery    │  │  Graph Loader  │  │   Simulation     │  │
+│  │   Module       │  │   Module       │  │   Engine         │  │
+│  │ (gcp_discovery)│  │ (load_graph)   │  │ (simulate_       │  │
+│  │                │  │                │  │  failure)        │  │
+│  └────────────────┘  └────────────────┘  └──────────────────┘  │
+└───────────────────────────────────────────────────────────────────┘
+                              ↕
+┌───────────────────────────────────────────────────────────────────┐
+│                        DATA LAYER                                 │
+│  ┌──────────────────────────────┐  ┌────────────────────────┐   │
+│  │   Neo4j Graph Database       │  │   JSON Data Store      │   │
+│  │   - Vendors                   │  │   - Sample data        │   │
+│  │   - Services                  │  │   - Discovered data    │   │
+│  │   - Business Processes        │  │   - Simulation results │   │
+│  │   - Compliance Controls       │  │   - Compliance configs │   │
+│  └──────────────────────────────┘  └────────────────────────┘   │
+└───────────────────────────────────────────────────────────────────┘
+                              ↕
+┌───────────────────────────────────────────────────────────────────┐
+│                    EXTERNAL SYSTEMS LAYER                         │
+│  ┌────────────────────┐  ┌─────────────────────────────────┐    │
+│  │   GCP APIs         │  │   Compliance Frameworks          │    │
+│  │   - Cloud Functions│  │   - SOC 2 Control Definitions    │    │
+│  │   - Cloud Run      │  │   - NIST CSF Mappings            │    │
+│  │   - Secret Manager │  │   - ISO 27001 Controls           │    │
+│  └────────────────────┘  └─────────────────────────────────┘    │
+└───────────────────────────────────────────────────────────────────┘
 ```
 
 ## Components

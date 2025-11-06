@@ -12,9 +12,15 @@ Usage:
 
 import argparse
 import logging
+import sys
+from pathlib import Path
 from typing import Dict, List, Any
 from datetime import datetime
 from neo4j import GraphDatabase
+
+# Add parent directory to path for imports
+sys.path.append(str(Path(__file__).parent.parent))
+
 from scripts.utils import (
     setup_logging,
     load_config,

@@ -10,6 +10,25 @@ This proof-of-concept demonstrates how to:
 - **Calculate** compliance posture changes (SOC 2, NIST, ISO)
 - **Discover** vendor dependencies across GCP infrastructure *(planned for Phase 4)*
 
+## 📖 Research Inspiration & GRC 7.0 Context
+
+Modern organizations are increasingly reliant on cloud providers and dozens of third-party SaaS integrations, making vendor risk a dynamic and business-critical concern. Traditional third-party risk management (TPRM) relies on static questionnaires and point-in-time assessments, which cannot keep up with the pace and interconnectedness of cloud-native environments.
+
+Our research is inspired by the evolution of the GRC discipline from reactive, manual practices (GRC 6.0) to the emerging **GRC 7.0 paradigm**:
+
+> **GRC 7.0** emphasizes continuous, API-driven risk monitoring, dynamic modeling, and predictive analytics to provide real-time, actionable insights—moving beyond static compliance checklists to automated, foresight-driven decision-making.
+
+This shift is described by GRC thought leaders as the introduction of **"digital twins"** and **"foresight engines"** in risk and compliance functions.
+
+**The Vendor Risk Digital Twin project implements these ideas by:**
+
+- Modeling complex vendor and service dependencies as a live graph
+- Simulating vendor failure scenarios before they happen
+- Quantifying business and compliance impact in real-time
+- Laying the groundwork for seamless integration with enterprise GRC tools (such as Archer/MetricStream) as an augmented intelligence layer
+
+**For more, see:** [GRC 7.0 – GRC Orchestrate: Digital Twins and the Forward-Looking Power of Risk, Integrity, and Objectives](https://grc2020.com/2025/07/01/grc-7-0-grc-orchestrate-digital-twins-and-the-forward-looking-power-of-risk-integrity-and-objectives/)
+
 ## 🏗️ Architecture
 
 **Current (Phase 3 PoC):**
@@ -151,7 +170,7 @@ vendor-risk-digital-twin/
 
 ## 🎓 Research Context
 
-This PoC is part of a research project validating the market gap for cloud-native vendor risk management. For full research proposal, see [../ProjectProposal.md](../ProjectProposal.md).
+This PoC is part of a research project validating the market gap for cloud-native vendor risk management. For full research proposal, see [docs/ClassProjectProposal.md](docs/ClassProjectProposal.md).
 
 **Research Questions:**
 1. Can we automatically discover vendor dependencies from cloud infrastructure?

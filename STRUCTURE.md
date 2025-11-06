@@ -270,11 +270,6 @@ Common issues:
 - Import errors: Ensure virtual environment is activated
 - No simulation results: Load sample data first
 
-## 🎉 You're Ready!
 
-Your Vendor Risk Digital Twin PoC is fully structured and ready for development. All the pieces are in place for your 12-week research project.
 
-**Start with:** `docs/setup_guide.md` → Follow step-by-step instructions
-
-Good luck with your research! 🚀
 

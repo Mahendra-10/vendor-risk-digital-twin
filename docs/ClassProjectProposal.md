@@ -210,7 +210,3 @@ Organizations are seeking augmentation strategies for existing GRC platforms. Th
 
 ---
 
-**Project Lead:** Mahendra  
-**Course:** Cloud Computing  
-**Institution:** [Your Institution]  
-**Submission Date:** [Date]

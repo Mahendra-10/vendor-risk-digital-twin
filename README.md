@@ -5,15 +5,21 @@ A cloud-native framework for predicting third-party vendor failure impact on bus
 ## 🎯 Project Overview
 
 This proof-of-concept demonstrates how to:
-- **Discover** vendor dependencies across GCP infrastructure
-- **Model** vendor-to-service relationships in a graph database
+- **Model** vendor-to-service relationships in a graph database (Neo4j)
 - **Simulate** vendor failure scenarios and predict cascading impact
 - **Calculate** compliance posture changes (SOC 2, NIST, ISO)
+- **Discover** vendor dependencies across GCP infrastructure *(planned for Phase 4)*
 
 ## 🏗️ Architecture
 
+**Current (Phase 3 PoC):**
 ```
-Vendor Dependencies → GCP Discovery → Neo4j Graph → Simulation Engine → Impact Report
+Sample Data → Neo4j Graph → Simulation Engine → Impact Report
+```
+
+**Future (Phase 4):**
+```
+GCP APIs → Discovery Module → Neo4j Graph → Simulation Engine → Impact Report
 ```
 
 See [docs/architecture.md](docs/architecture.md) for detailed design.
@@ -22,29 +28,31 @@ See [docs/architecture.md](docs/architecture.md) for detailed design.
 
 ### Prerequisites
 - Python 3.9+
-- Neo4j Desktop or Docker
-- GCP Account (free tier)
-- GCP Service Account with Cloud Functions/Cloud Run read permissions
+- **Neo4j Database** (choose one):
+  - **Neo4j Desktop** (recommended) - [Download here](https://neo4j.com/download/)
+  - Docker (if you prefer containerized setup)
 
 ### Installation
 
-1. **Clone and setup**
-```bash
-cd vendor-risk-digital-twin
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
-```
+**Step 1: Install and Configure Neo4j Database**
 
-2. **Configure credentials**
-```bash
-cp .env.example .env
-# Edit .env with your Neo4j and GCP credentials
-```
+<details>
+<summary><b>Option A: Neo4j Desktop (Recommended)</b></summary>
 
-3. **Start Neo4j**
+1. Download Neo4j Desktop from https://neo4j.com/download/
+2. Install and launch Neo4j Desktop
+3. Create a new project (or use existing)
+4. Create a new local DBMS instance:
+   - Set password: `password` (or your preferred password)
+   - Start the instance
+   - Note the connection URI: `neo4j://localhost:7687`
+
+</details>
+
+<details>
+<summary><b>Option B: Docker</b></summary>
+
 ```bash
-# Using Docker
 docker run -d \
   --name neo4j \
   -p 7474:7474 -p 7687:7687 \
@@ -52,21 +60,79 @@ docker run -d \
   neo4j:latest
 ```
 
+</details>
+
+**Step 2: Setup Python Environment**
+
+```bash
+cd vendor-risk-digital-twin
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+**Step 3: Configure Credentials**
+
+```bash
+cp .env.example .env
+# Edit .env with your Neo4j password (if you changed it from 'password')
+```
+
+**Step 4: Verify Neo4j Connection**
+
+```bash
+python -c "from neo4j import GraphDatabase; driver = GraphDatabase.driver('neo4j://localhost:7687', auth=('neo4j', 'password')); driver.verify_connectivity(); print('✅ Connected to Neo4j!'); driver.close()"
+```
+
+If you see `✅ Connected to Neo4j!`, you're ready to proceed!
+
 ### Usage
 
-**Step 1: Discover GCP Dependencies**
+#### 🔍 **Just Want to See Results? (No Setup Required)**
+
+If you just want to view existing simulation results without running anything:
+
+```bash
+# View the latest simulation output (already generated)
+cat data/outputs/simulation_result.json
+```
+
+This shows the complete Stripe failure simulation results (operational, financial, compliance impact).
+
+---
+
+#### ✅ **Run Your Own Simulations (Requires Neo4j Setup)**
+
+**Step 1: Load Sample Data into Neo4j**
+```bash
+python scripts/load_graph.py
+# Uses data/sample/sample_dependencies.json and compliance_controls.json by default
+```
+
+**Step 2: Run Failure Simulation**
+```bash
+python scripts/simulate_failure.py --vendor "Stripe" --duration 4
+# Outputs impact report to console AND saves to data/outputs/simulation_result.json
+```
+
+**Step 3: Visualize in Neo4j Browser**
+```
+Open Neo4j Browser: http://localhost:7474
+Run: MATCH (n) RETURN n LIMIT 40;
+```
+
+> **Note:** Even for console-only output, Neo4j must be running because the simulation engine queries the graph database to calculate impact.
+
+#### 🚧 **Future Approach (Phase 4 - GCP Integration)**
+
+**Step 1: Discover GCP Dependencies** *(Not yet implemented)*
 ```bash
 python scripts/gcp_discovery.py --project-id YOUR_PROJECT_ID
 ```
 
-**Step 2: Load Data into Neo4j**
+**Step 2: Load Discovered Data**
 ```bash
 python scripts/load_graph.py --data-file data/outputs/discovered_dependencies.json
-```
-
-**Step 3: Run Failure Simulation**
-```bash
-python scripts/simulate_failure.py --vendor "Stripe" --duration 4
 ```
 
 ## 📁 Project Structure
@@ -94,13 +160,15 @@ This PoC is part of a research project validating the market gap for cloud-nativ
 
 ## 📊 Demo Scenarios
 
-Three vendor failure scenarios are demonstrated:
+**Tested vendor failure scenarios:**
 
-| Vendor | Affected Services | Business Impact | Compliance Impact |
-|--------|------------------|-----------------|-------------------|
-| Stripe | Payment API, Checkout | $150K/hour revenue | SOC 2: -16% |
-| Auth0 | User Auth, SSO | 50K users locked out | NIST: -12% |
-| SendGrid | Email Notifications | Customer comms down | ISO 27001: -8% |
+| Vendor | Duration | Financial Impact | Compliance Impact | Overall Score |
+|--------|----------|------------------|-------------------|---------------|
+| **Stripe** | 4 hours | $550K total loss | SOC2: -22%, NIST: -12%, ISO: -23% | 0.32 (HIGH) |
+| **SendGrid** | 4 hours | $320K total loss | SOC2: -13%, NIST: -6%, ISO: -18% | 0.28 (HIGH) |
+| Auth0 | *(not yet tested)* | TBD | TBD | TBD |
+
+See `data/outputs/simulation_result.json` for detailed results.
 
 ## 🔧 Development
 

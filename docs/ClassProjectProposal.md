@@ -1,3 +1,12 @@
+
+**Project Team:**  
+- Mahendra Shahi  
+- Abdulaziz Andijani  
+
+**Course:** Cloud Security Computing  
+**Institution:** Johns Hopkins University  
+**Submission Date:** 11/06/2025
+
 # Vendor Risk Digital Twin: Cloud-Native Framework for Predicting Third-Party Failure Impact
 
 ---

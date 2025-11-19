@@ -116,6 +116,118 @@ Layer 3: Output & Integration
 - **Performance:** <2 seconds per simulation
 - **Output:** JSON reports with impact scores and recommendations
 
+**Example Simulation Output:**
+
+The simulation engine provides comprehensive, actionable insights. Here's an example output for a **Stripe payment processor failure** scenario (4-hour outage):
+
+```json
+{
+  "vendor": "Stripe",
+  "duration_hours": 4,
+  "timestamp": "2025-01-15T10:30:00Z",
+  
+  "operational_impact": {
+    "affected_services": [
+      {
+        "name": "payment-api",
+        "type": "cloud_function",
+        "rpm": 5000,
+        "customers_affected": 50000,
+        "business_processes": ["checkout", "subscription_renewal", "refund_processing"]
+      },
+      {
+        "name": "billing-service",
+        "type": "cloud_run",
+        "rpm": 2000,
+        "customers_affected": 30000,
+        "business_processes": ["checkout", "subscription_renewal"]
+      }
+    ],
+    "service_count": 2,
+    "total_rpm": 7000,
+    "customers_affected": 50000,
+    "business_processes": ["checkout", "subscription_renewal", "refund_processing"],
+    "impact_score": 0.35
+  },
+  
+  "financial_impact": {
+    "revenue_loss": 600000.0,
+    "revenue_loss_formatted": "$600,000.00",
+    "failed_transactions": 28000,
+    "customer_impact_cost": 250000,
+    "total_cost": 850000.0,
+    "total_cost_formatted": "$850,000.00",
+    "impact_score": 0.45
+  },
+  
+  "compliance_impact": {
+    "affected_frameworks": {
+      "soc2": {
+        "baseline_score": 0.92,
+        "new_score": 0.72,
+        "score_change": 0.20,
+        "affected_controls": ["CC6.6", "CC7.2", "CC8.1"]
+      },
+      "nist": {
+        "baseline_score": 0.88,
+        "new_score": 0.77,
+        "score_change": 0.11,
+        "affected_controls": ["ID.AM-3", "PR.AC-5"]
+      },
+      "iso27001": {
+        "baseline_score": 0.90,
+        "new_score": 0.69,
+        "score_change": 0.21,
+        "affected_controls": ["A.5.14", "A.9.4.2", "A.12.4.1"]
+      }
+    },
+    "impact_score": 0.17,
+    "summary": {
+      "soc2": {
+        "change": "-22.0%",
+        "new_score": "72.0%"
+      },
+      "nist": {
+        "change": "-12.5%",
+        "new_score": "77.5%"
+      },
+      "iso27001": {
+        "change": "-23.3%",
+        "new_score": "69.0%"
+      }
+    }
+  },
+  
+  "overall_impact_score": 0.32,
+  "severity": "HIGH",
+  
+  "recommendations": [
+    "Implement fallback payment processors (PayPal, Square) for 2 critical services",
+    "Consider vendor diversification for checkout and subscription_renewal processes",
+    "High financial impact detected ($850,000.00). Implement circuit breakers and graceful degradation",
+    "Compliance impact significant. Review compensating controls for affected frameworks:",
+    "  - SOC2: Score drops to 72.0% (3 controls affected: CC6.6, CC7.2, CC8.1)",
+    "  - NIST CSF: Score drops to 77.5% (2 controls affected: ID.AM-3, PR.AC-5)",
+    "  - ISO27001: Score drops to 69.0% (3 controls affected: A.5.14, A.9.4.2, A.12.4.1)",
+    "Establish real-time monitoring for payment processing health",
+    "Create incident response playbook for payment vendor failures"
+  ]
+}
+```
+
+**Key Insights from This Example:**
+
+1. **Operational Impact:** 2 services affected, 50,000 customers impacted, 7,000 requests/minute disrupted
+2. **Financial Impact:** $850,000 total cost (including $600K revenue loss + $250K customer impact)
+3. **Compliance Impact:** Significant degradation across all three frameworks (SOC2: -22%, NIST: -12.5%, ISO: -23.3%)
+4. **Actionable Recommendations:** Specific steps to mitigate risk, including vendor diversification and compensating controls
+
+This detailed output enables risk teams to:
+- **Quantify** the exact business impact before an incident occurs
+- **Prioritize** mitigation efforts based on multi-dimensional impact scores
+- **Plan** incident response with specific, actionable recommendations
+- **Report** to executives with concrete financial and compliance metrics
+
 #### 4. **Graph Loader** (`load_graph.py`)
 - Loads discovered dependencies into Neo4j
 - Idempotent operations (MERGE)

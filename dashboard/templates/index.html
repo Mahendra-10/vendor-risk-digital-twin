@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Risk Management - Apex Financial Services</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-left: 5px solid #1e3c72;
+        }
+
+        .company-brand {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .company-info {
+            flex: 1;
+        }
+
+        .company-name {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #1e3c72;
+            margin-bottom: 5px;
+            letter-spacing: -0.5px;
+        }
+
+        .user-badge {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .header h1 {
+            color: #1e3c72;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .header p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .compliance-badge {
+            display: inline-block;
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+
+        .panel {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .panel h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #1e3c72;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .stat-card .value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-card .label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .results {
+            margin-top: 20px;
+        }
+
+        .result-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-section h3::before {
+            content: "📊";
+            font-size: 1.2em;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .metric:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            color: #666;
+        }
+
+        .metric-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .impact-score {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+
+        .impact-score .score {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .impact-score .label {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .recommendations {
+            list-style: none;
+            padding: 0;
+        }
+
+        .recommendations li {
+            padding: 12px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 6px;
+            border-left: 4px solid #1e3c72;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1e3c72;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            border-left: 4px solid #c33;
+        }
+
+        .success {
+            background: #efe;
+            color: #3c3;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            border-left: 4px solid #3c3;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .developer-panel {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 15px;
+            display: none;
+            border: 2px solid #3c3c3c;
+        }
+
+        .developer-panel.active {
+            display: block;
+        }
+
+        .dev-log {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid transparent;
+        }
+
+        .dev-log.info {
+            color: #4ec9b0;
+            border-left-color: #4ec9b0;
+        }
+
+        .dev-log.success {
+            color: #4ec9b0;
+            border-left-color: #4ec9b0;
+        }
+
+        .dev-log.warning {
+            color: #dcdcaa;
+            border-left-color: #dcdcaa;
+        }
+
+        .dev-log.error {
+            color: #f48771;
+            border-left-color: #f48771;
+        }
+
+        .dev-log.api {
+            color: #569cd6;
+            border-left-color: #569cd6;
+        }
+
+        .dev-log.resource {
+            color: #ce9178;
+            border-left-color: #ce9178;
+        }
+
+        .dev-timestamp {
+            color: #808080;
+            margin-right: 10px;
+        }
+
+        .dev-section {
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        .dev-section-title {
+            color: #569cd6;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 968px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="company-brand">
+                <div class="company-info">
+                    <div class="company-name">Apex Financial Services</div>
+                    <div style="color: #666; font-size: 0.95em;">Vendor Risk Management Platform</div>
+                </div>
+                <div class="user-badge">👤 Compliance Officer</div>
+            </div>
+            <h1>🛡️ Vendor Risk Assessment & Impact Analysis</h1>
+            <p>Assess vendor dependencies, simulate failure scenarios, and evaluate business impact to ensure compliance with regulatory requirements and maintain operational resilience.</p>
+            <span class="compliance-badge">✓ SOC 2 Compliant | ✓ GDPR Ready | ✓ ISO 27001 Certified</span>
+        </div>
+
+        <div class="dashboard">
+            <!-- Discovery Panel -->
+            <div class="panel">
+                <h2>🔍 Vendor Discovery & Inventory</h2>
+                <p style="color: #666; margin-bottom: 20px; font-size: 0.9em;">
+                    Discover and catalog vendor dependencies from your cloud infrastructure. This helps maintain an accurate vendor inventory for compliance audits.
+                </p>
+                
+                <div class="form-group">
+                    <label for="projectId">GCP Project ID:</label>
+                    <input type="text" id="projectId" name="projectId" placeholder="vendor-risk-digital-twin" value="vendor-risk-digital-twin">
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 6px;">
+                    <input type="checkbox" id="developerMode" style="width: auto; margin: 0;">
+                    <label for="developerMode" style="margin: 0; font-size: 0.9em; color: #666; cursor: pointer;">
+                        🔧 <strong>Developer Mode</strong> - Show detailed discovery process
+                    </label>
+                </div>
+
+                <button type="button" class="btn" id="fetchDiscoveryBtn" style="margin-bottom: 10px; background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);">
+                    🔄 Refresh Vendor Inventory
+                </button>
+
+                <button type="button" class="btn" id="loadDiscoveryBtn" style="background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);">
+                    📊 Update Risk Database
+                </button>
+
+                <div id="discoveryStatus" style="margin-top: 15px;"></div>
+                
+                <!-- Developer Mode Panel -->
+                <div id="developerPanel" class="developer-panel">
+                    <div class="dev-section">
+                        <div class="dev-section-title">🔍 Discovery Process</div>
+                        <div id="devLogs"></div>
+                    </div>
+                    <div class="dev-section">
+                        <div class="dev-section-title">☁️ GCP APIs & Services</div>
+                        <div id="devApis"></div>
+                    </div>
+                    <div class="dev-section">
+                        <div class="dev-section-title">📦 Discovered Resources</div>
+                        <div id="devResources"></div>
+                    </div>
+                </div>
+                
+                <div id="discoveryResults" style="margin-top: 15px; display: none;">
+                    <div style="background: #f5f5f5; padding: 15px; border-radius: 6px; font-size: 0.9em;">
+                        <div><strong>📋 Vendors Cataloged:</strong> <span id="discoveredVendors">-</span></div>
+                        <div><strong>🔧 Services Identified:</strong> <span id="discoveredServices">-</span></div>
+                        <div><strong>🕒 Last Inventory Update:</strong> <span id="discoveryTimestamp">-</span></div>
+                    </div>
+                </div>
+
+                <!-- Neo4j Aura Link -->
+                <div id="neo4jLinkSection" style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e0e0e0; display: none;">
+                    <div style="background: linear-gradient(135deg, #008CC1 0%, #006B9E 100%); padding: 15px; border-radius: 6px; color: white;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                            <div>
+                                <strong style="font-size: 1.1em;">🔗 Risk Dependency Graph</strong>
+                                <div style="font-size: 0.85em; opacity: 0.9; margin-top: 5px;">
+                                    Visualize vendor dependencies and relationships
+                                </div>
+                            </div>
+                            <a id="neo4jAuraLink" href="#" target="_blank" rel="noopener noreferrer" 
+                               style="background: white; color: #008CC1; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: 600; font-size: 0.9em; transition: transform 0.2s;"
+                               onmouseover="this.style.transform='scale(1.05)'"
+                               onmouseout="this.style.transform='scale(1)'">
+                                Open Browser →
+                            </a>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.15); padding: 10px; border-radius: 4px; margin-top: 10px;">
+                            <div style="font-size: 0.75em; opacity: 0.9; margin-bottom: 5px;">Browser URL:</div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <code id="neo4jBrowserUrl" style="font-family: 'Courier New', monospace; font-size: 0.85em; background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 3px; flex: 1; word-break: break-all; color: white;">
+                                    -
+                                </code>
+                                <button onclick="copyNeo4jUrl()" 
+                                        style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); padding: 6px 12px; border-radius: 3px; cursor: pointer; font-size: 0.8em; transition: background 0.2s;"
+                                        onmouseover="this.style.background='rgba(255,255,255,0.3)'"
+                                        onmouseout="this.style.background='rgba(255,255,255,0.2)'"
+                                        title="Copy URL">
+                                    📋 Copy
+                                </button>
+                            </div>
+                        </div>
+                        <div style="font-size: 0.75em; opacity: 0.85; margin-top: 8px; font-family: monospace;">
+                            Instance ID: <span id="neo4jInstanceId">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Simulation Panel -->
+            <div class="panel">
+                <h2>⚡ Risk Impact Simulation</h2>
+                <p style="color: #666; margin-bottom: 20px; font-size: 0.9em;">
+                    Run failure scenario analysis to assess business impact, identify critical dependencies, and evaluate compliance risks. Results are automatically logged for audit purposes.
+                </p>
+                
+                <div class="stats" id="graphStats">
+                    <div class="stat-card">
+                        <div class="value" id="vendorCount">-</div>
+                        <div class="label">Active Vendors</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="value" id="serviceCount">-</div>
+                        <div class="label">Services Monitored</div>
+                    </div>
+                </div>
+
+                <form id="simulationForm">
+                    <div class="form-group">
+                        <label for="vendor">Select Vendor to Assess:</label>
+                        <select id="vendor" name="vendor" required>
+                            <option value="">Loading vendors...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="duration">Simulation Duration (hours):</label>
+                        <input type="number" id="duration" name="duration" value="4" min="1" max="72" required>
+                        <small style="color: #666; display: block; margin-top: 5px;">Recommended: 4-8 hours for comprehensive impact analysis</small>
+                    </div>
+
+                    <button type="submit" class="btn" id="simulateBtn">
+                        🚀 Run Risk Impact Analysis
+                    </button>
+                </form>
+
+                <div id="statusMessage"></div>
+            </div>
+
+            <!-- Results Panel -->
+            <div class="panel full-width" id="resultsPanel" style="display: none;">
+                <h2>📊 Risk Assessment Report</h2>
+                <p style="color: #666; margin-bottom: 20px; font-size: 0.9em;">
+                    Detailed impact analysis and compliance risk assessment. This report can be exported for audit documentation.
+                </p>
+                <div id="results"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load vendors on page load
+        async function loadVendors() {
+            try {
+                const response = await fetch('/api/vendors');
+                const data = await response.json();
+                const select = document.getElementById('vendor');
+                const simulateBtn = document.getElementById('simulateBtn');
+                
+                if (!data.vendors || data.vendors.length === 0) {
+                    select.innerHTML = '<option value="">No vendors found - Load discovery first</option>';
+                    select.disabled = true;
+                    simulateBtn.disabled = true;
+                    simulateBtn.textContent = 'Load Discovery Data First';
+                    simulateBtn.style.opacity = '0.6';
+                    showMessage('⚠️ No vendor data found. Please refresh the vendor inventory and update the risk database first.', 'warning');
+                    return;
+                }
+                
+                select.innerHTML = '<option value="">Select a vendor...</option>';
+                select.disabled = false;
+                data.vendors.forEach(vendor => {
+                    const option = document.createElement('option');
+                    option.value = vendor;
+                    option.textContent = vendor;
+                    select.appendChild(option);
+                });
+                
+                // Enable simulation button if vendors exist
+                simulateBtn.disabled = false;
+                simulateBtn.textContent = 'Run Simulation';
+                simulateBtn.style.opacity = '1';
+            } catch (error) {
+                console.error('Error loading vendors:', error);
+                showMessage('Error loading vendors', 'error');
+                document.getElementById('simulateBtn').disabled = true;
+            }
+        }
+
+        // Load graph statistics
+        async function loadGraphStats() {
+            try {
+                const response = await fetch('/api/graph/stats');
+                const data = await response.json();
+                document.getElementById('vendorCount').textContent = data.nodes.Vendor || 0;
+                document.getElementById('serviceCount').textContent = data.nodes.Service || 0;
+                
+                // Show warning if data exists but hasn't been loaded in this session
+                const simulateBtn = document.getElementById('simulateBtn');
+                if (data.nodes.Vendor > 0 && !data.dataLoaded) {
+                    // Data exists but wasn't loaded in this session
+                    simulateBtn.style.border = '2px solid #ff9800';
+                    simulateBtn.title = '⚠️ Using existing data. Consider loading fresh discovery data first.';
+                } else if (data.dataLoaded && data.lastDataLoad) {
+                    // Data was loaded - show success state
+                    simulateBtn.style.border = '2px solid #4caf50';
+                    simulateBtn.title = `✅ Data loaded at ${new Date(data.lastDataLoad).toLocaleTimeString()}`;
+                } else {
+                    simulateBtn.style.border = '';
+                    simulateBtn.title = '';
+                }
+            } catch (error) {
+                console.error('Error loading graph stats:', error);
+            }
+        }
+
+        // Show message
+        function showMessage(message, type = 'success') {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.className = type;
+            statusDiv.textContent = message;
+            statusDiv.style.display = 'block';
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            }).format(amount);
+        }
+
+        // Format percentage
+        function formatPercentage(value) {
+            return (value * 100).toFixed(1) + '%';
+        }
+
+        // Display results
+        function displayResults(data) {
+            const resultsDiv = document.getElementById('results');
+            const resultsPanel = document.getElementById('resultsPanel');
+            
+            resultsPanel.style.display = 'block';
+            
+            let html = `
+                <div class="impact-score">
+                    <div class="label">Risk Severity Score</div>
+                    <div class="score">${(data.overall_impact_score * 100).toFixed(0)}/100</div>
+                    <div class="label">${data.overall_impact_score >= 0.3 ? '🔴 CRITICAL RISK' : data.overall_impact_score >= 0.2 ? '🟡 MODERATE RISK' : '🟢 LOW RISK'}</div>
+                </div>
+
+                <div class="result-section">
+                    <h3>📊 Operational Impact Assessment</h3>
+                    <div class="metric">
+                        <span class="metric-label">Services Affected:</span>
+                        <span class="metric-value">${data.operational_impact.service_count}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Customers Affected:</span>
+                        <span class="metric-value">${data.operational_impact.customers_affected.toLocaleString()}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Business Processes:</span>
+                        <span class="metric-value">${data.operational_impact.business_processes.length}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Total RPM:</span>
+                        <span class="metric-value">${data.operational_impact.total_rpm.toLocaleString()}</span>
+                    </div>
+                </div>
+
+                <div class="result-section">
+                    <h3>💰 Financial Impact Assessment</h3>
+                    <div class="metric">
+                        <span class="metric-label">Total Cost:</span>
+                        <span class="metric-value">${data.financial_impact.total_cost_formatted}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Revenue Loss:</span>
+                        <span class="metric-value">${data.financial_impact.revenue_loss_formatted}</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Failed Transactions:</span>
+                        <span class="metric-value">${data.financial_impact.failed_transactions.toLocaleString()}</span>
+                    </div>
+                </div>
+
+                <div class="result-section">
+                    <h3>🛡️ Compliance & Regulatory Impact</h3>
+                    <p style="color: #666; font-size: 0.9em; margin-bottom: 15px;">Impact on regulatory compliance frameworks and audit readiness</p>
+            `;
+
+            // Add compliance frameworks
+            const complianceImpact = data.compliance_impact || {};
+            const complianceSummary = complianceImpact.summary || {};
+            const complianceFrameworks = complianceImpact.affected_frameworks || {};
+            
+            // Debug: log what we have
+            console.log('Compliance data:', {
+                hasImpact: !!complianceImpact,
+                hasSummary: Object.keys(complianceSummary).length > 0,
+                hasFrameworks: Object.keys(complianceFrameworks).length > 0,
+                summaryKeys: Object.keys(complianceSummary),
+                frameworkKeys: Object.keys(complianceFrameworks)
+            });
+            
+            // Use summary if available (preferred format)
+            if (Object.keys(complianceSummary).length > 0) {
+                for (const [framework, frameworkData] of Object.entries(complianceSummary)) {
+                    html += `
+                        <div class="metric">
+                            <span class="metric-label">${framework.toUpperCase()}:</span>
+                            <span class="metric-value">${frameworkData.change} → ${frameworkData.new_score}</span>
+                        </div>
+                    `;
+                }
+            } else if (Object.keys(complianceFrameworks).length > 0) {
+                // Fallback: format from affected_frameworks
+                for (const [framework, frameworkData] of Object.entries(complianceFrameworks)) {
+                    const baseline = (frameworkData.baseline_score * 100).toFixed(1);
+                    const newScore = (frameworkData.new_score * 100).toFixed(1);
+                    html += `
+                        <div class="metric">
+                            <span class="metric-label">${framework.toUpperCase()}:</span>
+                            <span class="metric-value">${baseline}% → ${newScore}%</span>
+                        </div>
+                    `;
+                }
+            } else {
+                html += `<p style="color: #999; font-style: italic;">No compliance data available for this vendor.</p>`;
+            }
+
+            html += `</div>`;
+
+            // Add recommendations
+            if (data.recommendations && data.recommendations.length > 0) {
+                html += `
+                    <div class="result-section">
+                        <h3>📋 Risk Mitigation Recommendations</h3>
+                        <p style="color: #666; font-size: 0.9em; margin-bottom: 15px;">Recommended actions to reduce vendor risk and maintain compliance</p>
+                        <ul class="recommendations">
+                `;
+                data.recommendations.forEach(rec => {
+                    html += `<li>${rec}</li>`;
+                });
+                html += `</ul></div>`;
+            }
+            
+            // Add audit note
+            html += `
+                <div style="background: #e3f2fd; padding: 15px; border-radius: 6px; margin-top: 20px; border-left: 4px solid #2196F3;">
+                    <strong style="color: #1976D2;">📝 Audit Note:</strong>
+                    <p style="color: #666; margin-top: 5px; font-size: 0.9em;">
+                        This risk assessment has been automatically logged to the audit database (BigQuery) for compliance reporting and regulatory documentation.
+                    </p>
+                </div>
+            `;
+
+            resultsDiv.innerHTML = html;
+            
+            // Scroll to results
+            resultsPanel.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Handle form submission
+        document.getElementById('simulationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const vendor = document.getElementById('vendor').value;
+            const duration = document.getElementById('duration').value;
+            const btn = document.getElementById('simulateBtn');
+            const resultsDiv = document.getElementById('results');
+            
+            if (!vendor) {
+                showMessage('Please select a vendor', 'error');
+                return;
+            }
+
+            // Show loading
+            btn.disabled = true;
+            btn.textContent = 'Running Simulation...';
+            resultsDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Simulating ${vendor} failure for ${duration} hours...</p>
+                </div>
+            `;
+            document.getElementById('resultsPanel').style.display = 'block';
+
+            // Check if using old data before simulation
+            const statsResponse = await fetch('/api/graph/stats');
+            const statsData = await statsResponse.json();
+            if (statsData.nodes.Vendor > 0 && !statsData.dataLoaded) {
+                // Warn user they're using old data
+                const proceed = confirm(
+                    '⚠️ You are using data from a previous session.\n\n' +
+                    'For best results, please:\n' +
+                    '1. Click "Fetch Latest Discovery"\n' +
+                    '2. Click "Update Risk Database"\n\n' +
+                    'Do you want to proceed with existing data?'
+                );
+                if (!proceed) {
+                    btn.disabled = false;
+                    btn.textContent = 'Run Simulation';
+                    return;
+                }
+            }
+
+            try {
+                const response = await fetch('/api/simulate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        vendor: vendor,
+                        duration: parseInt(duration)
+                    })
+                });
+
+                const data = await response.json();
+                
+                // Debug: Log compliance data in browser console
+                console.log('Simulation response:', {
+                    vendor: data.vendor,
+                    hasComplianceImpact: !!data.compliance_impact,
+                    complianceKeys: data.compliance_impact ? Object.keys(data.compliance_impact) : [],
+                    summaryKeys: data.compliance_impact?.summary ? Object.keys(data.compliance_impact.summary) : [],
+                    frameworkKeys: data.compliance_impact?.affected_frameworks ? Object.keys(data.compliance_impact.affected_frameworks) : []
+                });
+
+                if (!response.ok) {
+                    // Check if error is about missing data
+                    if (data.requiresDataLoad || data.error?.includes('No vendor data')) {
+                        showMessage('⚠️ ' + data.error + ' Please refresh the vendor inventory and update the risk database first.', 'error');
+                        // Reload vendors to update UI
+                        loadVendors();
+                    } else {
+                        throw new Error(data.error || 'Simulation failed');
+                    }
+                    return;
+                }
+
+                displayResults(data);
+                
+                // Show message about automatic BigQuery saving
+                if (!data.warning) {
+                    showMessage('✅ Risk assessment completed! Results have been automatically logged to the audit database for compliance reporting.', 'success');
+                } else {
+                    showMessage('⚠️ Assessment completed locally. For audit compliance, use the cloud service to automatically log results.', 'warning');
+                }
+            } catch (error) {
+                console.error('Simulation error:', error);
+                // Check if error is about missing data
+                if (error.message.includes('No vendor data') || error.message.includes('not found in Neo4j')) {
+                    showMessage('⚠️ ' + error.message + ' Please update the risk database in the Discovery Panel first.', 'error');
+                    loadVendors(); // Reload to update UI state
+                } else {
+                    resultsDiv.innerHTML = `
+                        <div class="error">
+                            <strong>Error:</strong> ${error.message}
+                        </div>
+                    `;
+                    showMessage('Simulation failed: ' + error.message, 'error');
+                }
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Run Simulation';
+            }
+        });
+
+        // Discovery functions
+        // Developer mode logging functions
+        function addDevLog(message, type = 'info', section = 'logs') {
+            const panel = document.getElementById('developerPanel');
+            const isActive = document.getElementById('developerMode').checked;
+            
+            if (!isActive) return;
+            
+            panel.classList.add('active');
+            const timestamp = new Date().toLocaleTimeString();
+            const logDiv = document.createElement('div');
+            logDiv.className = `dev-log ${type}`;
+            logDiv.innerHTML = `<span class="dev-timestamp">[${timestamp}]</span>${message}`;
+            
+            const targetDiv = document.getElementById(`dev${section.charAt(0).toUpperCase() + section.slice(1)}`);
+            if (targetDiv) {
+                targetDiv.appendChild(logDiv);
+                targetDiv.scrollTop = targetDiv.scrollHeight;
+            }
+        }
+
+        function clearDevLogs() {
+            document.getElementById('devLogs').innerHTML = '';
+            document.getElementById('devApis').innerHTML = '';
+            document.getElementById('devResources').innerHTML = '';
+        }
+
+        async function fetchDiscovery() {
+            const projectId = document.getElementById('projectId').value || 'vendor-risk-digital-twin';
+            const btn = document.getElementById('fetchDiscoveryBtn');
+            const statusDiv = document.getElementById('discoveryStatus');
+            const resultsDiv = document.getElementById('discoveryResults');
+            const devMode = document.getElementById('developerMode').checked;
+            
+            if (devMode) {
+                clearDevLogs();
+                addDevLog('🚀 Starting vendor discovery process...', 'info', 'logs');
+                addDevLog(`📋 Project ID: ${projectId}`, 'info', 'logs');
+                addDevLog('📡 Connecting to GCP Cloud Storage API...', 'api', 'apis');
+            }
+            
+            btn.disabled = true;
+            btn.textContent = 'Fetching...';
+            statusDiv.innerHTML = '<div class="loading"><div class="spinner"></div>Fetching discovery results...</div>';
+            
+            try {
+                const response = await fetch(`/api/discovery/latest?project_id=${projectId}&dev_mode=${devMode}`);
+                const data = await response.json();
+                
+                if (devMode && data.dev_mode) {
+                    // Show API calls
+                    data.dev_mode.apis.forEach(api => {
+                        addDevLog(`☁️ ${api.name}: ${api.action}`, 'api', 'apis');
+                    });
+                    
+                    // Show discovered resources
+                    if (data.dev_mode.summary) {
+                        addDevLog(`✅ Discovery Complete!`, 'success', 'logs');
+                        addDevLog(`📦 Cloud Functions: ${data.dev_mode.summary.cloud_functions}`, 'resource', 'resources');
+                        addDevLog(`🚀 Cloud Run Services: ${data.dev_mode.summary.cloud_run_services}`, 'resource', 'resources');
+                        addDevLog(`🏢 Vendors Found: ${data.dev_mode.summary.vendors_found}`, 'resource', 'resources');
+                    }
+                    
+                    // Show detailed logs
+                    if (data.dev_mode.logs && data.dev_mode.logs.length > 0) {
+                        data.dev_mode.logs.slice(-20).forEach(log => {
+                            const logType = log.includes('ERROR') ? 'error' : 
+                                          log.includes('WARNING') ? 'warning' : 
+                                          log.includes('✅') ? 'success' : 'info';
+                            addDevLog(log.replace(/.*?-\s*(.*)/, '$1'), logType, 'logs');
+                        });
+                    }
+                }
+                
+                if (data.success) {
+                    const vendors = data.discovery.vendors || [];
+                    const totalServices = vendors.reduce((sum, v) => sum + (v.services?.length || 0), 0);
+                    
+                    document.getElementById('discoveredVendors').textContent = vendors.length;
+                    document.getElementById('discoveredServices').textContent = totalServices;
+                    document.getElementById('discoveryTimestamp').textContent = 
+                        new Date(data.timestamp).toLocaleString();
+                    
+                    resultsDiv.style.display = 'block';
+                    statusDiv.innerHTML = '<div class="success">✅ Discovery results fetched successfully!</div>';
+                    
+                    if (devMode) {
+                        addDevLog('💾 Discovery results loaded from Cloud Storage', 'success', 'logs');
+                        addDevLog('📊 Ready to convert to Neo4j format', 'info', 'logs');
+                    }
+                } else {
+                    throw new Error(data.error || 'Failed to fetch discovery');
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+                if (devMode) {
+                    addDevLog(`❌ Error: ${error.message}`, 'error', 'logs');
+                }
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🔄 Refresh Vendor Inventory';
+            }
+        }
+
+        async function loadDiscovery() {
+            const projectId = document.getElementById('projectId').value || 'vendor-risk-digital-twin';
+            const btn = document.getElementById('loadDiscoveryBtn');
+            const statusDiv = document.getElementById('discoveryStatus');
+            const devMode = document.getElementById('developerMode').checked;
+            
+            if (devMode) {
+                addDevLog('🔄 Starting Neo4j data load process...', 'info', 'logs');
+                addDevLog('🔗 Connecting to Neo4j Aura database...', 'api', 'apis');
+            }
+            
+            btn.disabled = true;
+            btn.textContent = 'Loading...';
+            statusDiv.innerHTML = '<div class="loading"><div class="spinner"></div>Loading discovery into Neo4j...</div>';
+            
+            try {
+                const response = await fetch('/api/discovery/load', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ project_id: projectId })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    statusDiv.innerHTML = '<div class="success">✅ Vendor inventory updated successfully! Risk database refreshed. You can now run impact assessments.</div>';
+                    
+                    if (devMode) {
+                        addDevLog('✅ Data successfully loaded into Neo4j', 'success', 'logs');
+                        addDevLog('📊 Creating vendor nodes...', 'info', 'logs');
+                        addDevLog('🔗 Creating service nodes...', 'info', 'logs');
+                        addDevLog('🔀 Establishing relationships...', 'info', 'logs');
+                    }
+                    
+                    // Show Neo4j link after successful load
+                    loadNeo4jInfo();
+                    // Refresh vendors and stats after loading
+                    setTimeout(() => {
+                        loadVendors();
+                        loadGraphStats();
+                        // Show success message about being ready for simulation
+                        showMessage('✅ Vendor inventory updated successfully! You can now run risk impact assessments.', 'success');
+                        // Force refresh stats to update button state
+                        setTimeout(loadGraphStats, 500);
+                    }, 1000);
+                } else {
+                    throw new Error(data.error || 'Failed to load discovery');
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+                if (devMode) {
+                    addDevLog(`❌ Error: ${error.message}`, 'error', 'logs');
+                }
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '📊 Update Risk Database';
+            }
+        }
+
+        // Load Neo4j info and show link
+        async function loadNeo4jInfo() {
+            try {
+                const response = await fetch('/api/neo4j/info');
+                const data = await response.json();
+                
+                if (data.auraBrowserUrl || data.auraConsoleUrl) {
+                    const linkSection = document.getElementById('neo4jLinkSection');
+                    const linkElement = document.getElementById('neo4jAuraLink');
+                    const urlElement = document.getElementById('neo4jBrowserUrl');
+                    const instanceElement = document.getElementById('neo4jInstanceId');
+                    
+                    // Prefer browser URL (for viewing graph), fallback to console URL
+                    const url = data.auraBrowserUrl || data.auraConsoleUrl;
+                    linkElement.href = url;
+                    urlElement.textContent = url || '-';
+                    instanceElement.textContent = data.instanceId || 'N/A';
+                    linkSection.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Failed to load Neo4j info:', error);
+            }
+        }
+
+        // Copy Neo4j URL to clipboard
+        function copyNeo4jUrl() {
+            const urlElement = document.getElementById('neo4jBrowserUrl');
+            const url = urlElement.textContent;
+            
+            if (url && url !== '-') {
+                navigator.clipboard.writeText(url).then(() => {
+                    // Show feedback
+                    const btn = event.target;
+                    const originalText = btn.textContent;
+                    btn.textContent = '✅ Copied!';
+                    btn.style.background = 'rgba(76, 175, 80, 0.3)';
+                    setTimeout(() => {
+                        btn.textContent = originalText;
+                        btn.style.background = 'rgba(255,255,255,0.2)';
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy:', err);
+                    alert('Failed to copy URL. Please copy manually: ' + url);
+                });
+            }
+        }
+
+        // Attach event listeners
+        document.getElementById('fetchDiscoveryBtn').addEventListener('click', fetchDiscovery);
+        document.getElementById('loadDiscoveryBtn').addEventListener('click', loadDiscovery);
+
+        // Initialize on page load
+        loadVendors();
+        loadGraphStats();
+        loadNeo4jInfo();
+        
+        // Refresh stats every 30 seconds
+        setInterval(loadGraphStats, 30000);
+    </script>
+</body>
+</html>
+

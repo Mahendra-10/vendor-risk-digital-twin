@@ -1,0 +1,183 @@
+{
+  "vendors": [
+    {
+      "vendor_id": "vendor_stripe",
+      "name": "Stripe",
+      "category": "payment_processor",
+      "criticality": "critical",
+      "services": [
+        {
+          "service_id": "svc_001",
+          "name": "checkout-service",
+          "type": "cloud_run",
+          "gcp_resource": "projects/vendor-risk-digital-twin/locations/us-central1/services/checkout-service",
+          "environment_variables": [
+            "STRIPE_PUBLISHABLE_KEY",
+            "TWILIO_ACCOUNT_SID",
+            "TWILIO_AUTH_TOKEN"
+          ],
+          "business_processes": [
+            "checkout",
+            "refunds",
+            "subscription_billing"
+          ],
+          "rpm": 500,
+          "customers_affected": 50000
+        },
+        {
+          "service_id": "svc_002",
+          "name": "payment-service",
+          "type": "cloud_run",
+          "gcp_resource": "projects/vendor-risk-digital-twin/locations/us-central1/services/payment-service",
+          "environment_variables": [
+            "STRIPE_API_KEY",
+            "STRIPE_WEBHOOK_SECRET",
+            "LOG_EXECUTION_ID"
+          ],
+          "business_processes": [
+            "checkout",
+            "refunds",
+            "subscription_billing"
+          ],
+          "rpm": 500,
+          "customers_affected": 50000
+        },
+        {
+          "service_id": "svc_002",
+          "name": "payment-service",
+          "type": "cloud_run",
+          "gcp_resource": "projects/vendor-risk-digital-twin/locations/us-central1/services/payment-service",
+          "environment_variables": [
+            "STRIPE_API_KEY",
+            "STRIPE_WEBHOOK_SECRET",
+            "LOG_EXECUTION_ID"
+          ],
+          "business_processes": [
+            "checkout",
+            "refunds",
+            "subscription_billing"
+          ],
+          "rpm": 500,
+          "customers_affected": 50000
+        }
+      ]
+    },
+    {
+      "vendor_id": "vendor_twilio",
+      "name": "Twilio",
+      "category": "communication",
+      "criticality": "high",
+      "services": [
+        {
+          "service_id": "svc_003",
+          "name": "checkout-service",
+          "type": "cloud_run",
+          "gcp_resource": "projects/vendor-risk-digital-twin/locations/us-central1/services/checkout-service",
+          "environment_variables": [
+            "STRIPE_PUBLISHABLE_KEY",
+            "TWILIO_ACCOUNT_SID",
+            "TWILIO_AUTH_TOKEN"
+          ],
+          "business_processes": [
+            "sms_notifications",
+            "2fa_verification"
+          ],
+          "rpm": 150,
+          "customers_affected": 30000
+        },
+        {
+          "service_id": "svc_003",
+          "name": "checkout-service",
+          "type": "cloud_run",
+          "gcp_resource": "projects/vendor-risk-digital-twin/locations/us-central1/services/checkout-service",
+          "environment_variables": [
+            "STRIPE_PUBLISHABLE_KEY",
+            "TWILIO_ACCOUNT_SID",
+            "TWILIO_AUTH_TOKEN"
+          ],
+          "business_processes": [
+            "sms_notifications",
+            "2fa_verification"
+          ],
+          "rpm": 150,
+          "customers_affected": 30000
+        }
+      ]
+    },
+    {
+      "vendor_id": "vendor_sendgrid",
+      "name": "SendGrid",
+      "category": "email_service",
+      "criticality": "high",
+      "services": [
+        {
+          "service_id": "svc_004",
+          "name": "email-service",
+          "type": "cloud_run",
+          "gcp_resource": "projects/vendor-risk-digital-twin/locations/us-central1/services/email-service",
+          "environment_variables": [
+            "SENDGRID_API_KEY",
+            "LOG_EXECUTION_ID"
+          ],
+          "business_processes": [
+            "email_notifications",
+            "transactional_emails"
+          ],
+          "rpm": 200,
+          "customers_affected": 25000
+        }
+      ]
+    },
+    {
+      "vendor_id": "vendor_auth0",
+      "name": "Auth0",
+      "category": "authentication",
+      "criticality": "critical",
+      "services": [
+        {
+          "service_id": "svc_005",
+          "name": "auth-service",
+          "type": "cloud_run",
+          "gcp_resource": "projects/vendor-risk-digital-twin/locations/us-central1/services/auth-service",
+          "environment_variables": [
+            "AUTH0_CLIENT_ID",
+            "AUTH0_DOMAIN",
+            "LOG_EXECUTION_ID"
+          ],
+          "business_processes": [
+            "user_login",
+            "user_registration",
+            "password_reset"
+          ],
+          "rpm": 300,
+          "customers_affected": 100000
+        },
+        {
+          "service_id": "svc_005",
+          "name": "auth-service",
+          "type": "cloud_run",
+          "gcp_resource": "projects/vendor-risk-digital-twin/locations/us-central1/services/auth-service",
+          "environment_variables": [
+            "AUTH0_CLIENT_ID",
+            "AUTH0_DOMAIN",
+            "LOG_EXECUTION_ID"
+          ],
+          "business_processes": [
+            "user_login",
+            "user_registration",
+            "password_reset"
+          ],
+          "rpm": 300,
+          "customers_affected": 100000
+        }
+      ]
+    }
+  ],
+  "discovery_metadata": {
+    "discovery_timestamp": "2025-11-28T02:05:43.733455",
+    "project_id": "vendor-risk-digital-twin",
+    "source": "gcp_discovery",
+    "cloud_functions_count": 0,
+    "cloud_run_services_count": 8
+  }
+}

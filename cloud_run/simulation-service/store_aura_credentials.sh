@@ -9,17 +9,31 @@ echo "🔐 Storing Neo4j Aura credentials in GCP Secret Manager..."
 echo "Project: ${PROJECT_ID}"
 echo ""
 
-# Use provided URI or default to your Aura instance
+# Get credentials from environment variables or prompt for input
+# NEVER hardcode credentials in this file!
+
 if [ -n "$1" ]; then
     NEO4J_URI="$1"
+elif [ -n "$NEO4J_URI" ]; then
+    # Use environment variable if set
+    NEO4J_URI="$NEO4J_URI"
 else
-    # Default to your Aura instance
-    NEO4J_URI="neo4j+s://d29c0138.databases.neo4j.io"
+    echo "❌ Error: NEO4J_URI not provided"
+    echo "Usage: $0 <neo4j-uri>"
+    echo "   OR: export NEO4J_URI='neo4j+s://your-instance.databases.neo4j.io'"
+    exit 1
 fi
 
-# Credentials (from Neo4j Aura)
-NEO4J_USER="neo4j"
-NEO4J_PASSWORD="lFzlLLu_hf8h_Hg0JHb5dtIAGNTq8_AZlLEpcV9LG-4"
+# Get username from environment or use default
+NEO4J_USER="${NEO4J_USER:-neo4j}"
+
+# Get password from environment (required)
+if [ -z "$NEO4J_PASSWORD" ]; then
+    echo "❌ Error: NEO4J_PASSWORD environment variable not set"
+    echo "Please set it before running this script:"
+    echo "  export NEO4J_PASSWORD='your-password'"
+    exit 1
+fi
 
 echo "Storing credentials..."
 

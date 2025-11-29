@@ -316,8 +316,9 @@ class VendorFailureSimulator:
         
         if not vendor_controls:
             return {
-                'affected_frameworks': [],
-                'impact_score': 0.0
+                'affected_frameworks': {},  # Use empty object for consistency with JavaScript simulator
+                'impact_score': 0.0,
+                'summary': {}  # Always include summary field (empty when no data)
             }
         
         # Get impact weights

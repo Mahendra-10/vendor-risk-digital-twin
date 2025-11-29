@@ -26,6 +26,7 @@ export function setupLogging(logLevel = 'INFO') {
     debug: (msg) => currentLevel <= 0 && console.log(`[DEBUG] ${msg}`),
     info: (msg) => currentLevel <= 1 && console.log(`[INFO] ${msg}`),
     warning: (msg) => currentLevel <= 2 && console.warn(`[WARNING] ${msg}`),
+    warn: (msg) => currentLevel <= 2 && console.warn(`[WARNING] ${msg}`), // Alias for warning
     error: (msg) => currentLevel <= 3 && console.error(`[ERROR] ${msg}`),
   };
 }

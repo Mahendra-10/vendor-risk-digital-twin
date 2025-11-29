@@ -48,10 +48,33 @@ export class VendorFailureSimulator {
    * @returns {Promise<Object>} Simulation results
    */
   async simulateVendorFailure(vendorName, durationHours) {
-    this.logger.info(`🔴 Simulating ${vendorName} failure for ${durationHours} hours...`);
+    // Normalize vendor name for display (capitalize properly)
+    const normalizedVendor = vendorName.toLowerCase().trim();
+    let displayVendorName = vendorName;
+    
+    // Handle special vendor name cases (like Python code)
+    if (normalizedVendor === 'auth0') {
+      displayVendorName = 'Auth0';
+    } else if (normalizedVendor === 'sendgrid') {
+      displayVendorName = 'SendGrid';
+    } else if (normalizedVendor === 'mongodb atlas') {
+      displayVendorName = 'MongoDB Atlas';
+    } else if (normalizedVendor === 'twilio') {
+      displayVendorName = 'Twilio';
+    } else if (normalizedVendor === 'stripe') {
+      displayVendorName = 'Stripe';
+    } else if (vendorName && vendorName[0] && vendorName[0] === vendorName[0].toUpperCase()) {
+      // Keep original if already capitalized
+      displayVendorName = vendorName;
+    } else {
+      // Default: capitalize first letter
+      displayVendorName = vendorName.charAt(0).toUpperCase() + vendorName.slice(1).toLowerCase();
+    }
+    
+    this.logger.info(`🔴 Simulating ${displayVendorName} failure for ${durationHours} hours...`);
 
     const simulation = {
-      vendor: vendorName,
+      vendor: displayVendorName,  // Use properly capitalized name
       duration_hours: durationHours,
       timestamp: new Date().toISOString(),
       operational_impact: {},
@@ -69,8 +92,12 @@ export class VendorFailureSimulator {
     const financial = this._calculateFinancialImpact(vendorName, durationHours, operational);
     simulation.financial_impact = financial;
 
-    // Calculate compliance impact
-    const compliance = this._calculateComplianceImpact(vendorName);
+    // Calculate compliance impact (try display name first, then original)
+    let compliance = this._calculateComplianceImpact(displayVendorName);
+    if (Object.keys(compliance.affected_frameworks || {}).length === 0) {
+      // Fallback to original vendor name
+      compliance = this._calculateComplianceImpact(vendorName);
+    }
     simulation.compliance_impact = compliance;
 
     // Calculate overall impact score
@@ -234,16 +261,41 @@ export class VendorFailureSimulator {
   _calculateComplianceImpact(vendorName) {
     this.logger.info('Calculating compliance impact...');
 
-    // Get vendor's compliance controls (case-insensitive lookup)
+    // Get vendor's compliance controls (case-insensitive lookup with name mapping)
     const controlMappings = this.complianceData.control_mappings || {};
-    // Try exact match first, then case-insensitive
+    
+    // Try exact match first
     let vendorControls = controlMappings[vendorName] || {};
+    
+    // If not found, try name mapping (like Python code)
     if (Object.keys(vendorControls).length === 0) {
-      // Try case-insensitive match
+      const vendorLower = vendorName.toLowerCase().trim();
+      const nameMapping = {
+        'auth0': 'Auth0',
+        'stripe': 'Stripe',
+        'sendgrid': 'SendGrid',
+        'mongodb atlas': 'MongoDB Atlas',
+        'twilio': 'Twilio',
+        'datadog': 'Datadog'
+      };
+      
+      if (nameMapping[vendorLower]) {
+        vendorControls = controlMappings[nameMapping[vendorLower]] || {};
+      }
+    }
+    
+    // If still not found, try case-insensitive match
+    if (Object.keys(vendorControls).length === 0) {
       const vendorKey = Object.keys(controlMappings).find(
         key => key.toLowerCase() === vendorName.toLowerCase()
       );
       vendorControls = vendorKey ? controlMappings[vendorKey] : {};
+    }
+    
+    // If still not found, try capitalized version
+    if (Object.keys(vendorControls).length === 0 && vendorName) {
+      const capitalized = vendorName.charAt(0).toUpperCase() + vendorName.slice(1).toLowerCase();
+      vendorControls = controlMappings[capitalized] || {};
     }
 
     if (Object.keys(vendorControls).length === 0) {
@@ -342,7 +394,9 @@ export class VendorFailureSimulator {
 
     // Compliance recommendations
     const compliance = simulation.compliance_impact;
-    if (compliance.impact_score > 0.1) {
+    this.logger.info(`Log of Compliance impact: ${JSON.stringify(compliance)}`);
+
+    // if (compliance.impact_score > 0.1) {
       recommendations.push(
         'Compliance impact significant. Review compensating controls for affected frameworks'
       );
@@ -351,7 +405,7 @@ export class VendorFailureSimulator {
           `  - ${framework.toUpperCase()}: Score drops to ${frameworkData.new_score}`
         );
       }
-    }
+    // }
 
     return recommendations;
   }

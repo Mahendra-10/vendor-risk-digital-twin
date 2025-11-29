@@ -280,6 +280,128 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* Digital Twin Mapping Animation */
+        .twin-mapping-container {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px 0;
+            min-height: 450px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .twin-canvas {
+            width: 100%;
+            height: 380px;
+            position: relative;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 8px;
+            border: 2px dashed rgba(102, 126, 234, 0.3);
+        }
+
+        .twin-node {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.65em;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            animation: nodeAppear 0.6s ease-out forwards;
+            opacity: 0;
+            text-align: center;
+            line-height: 1.2;
+            padding: 5px;
+            z-index: 10;
+        }
+
+        .twin-node.vendor {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .twin-node.service {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .twin-node.process {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .twin-node.compliance {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .twin-connection {
+            position: absolute;
+            height: 3px;
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.6), rgba(118, 75, 162, 0.6));
+            transform-origin: left center;
+            animation: connectionDraw 0.8s ease-out forwards;
+            opacity: 0;
+            z-index: 5;
+            border-radius: 2px;
+        }
+
+        @keyframes nodeAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0) rotate(-180deg);
+            }
+            50% {
+                transform: scale(1.2) rotate(0deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        @keyframes connectionDraw {
+            0% {
+                opacity: 0;
+                transform: scaleX(0);
+            }
+            100% {
+                opacity: 1;
+                transform: scaleX(1);
+            }
+        }
+
+        .twin-progress {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.1em;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .twin-progress-step {
+            display: inline-block;
+            margin: 0 10px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        .twin-status {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.95em;
+            color: #666;
+            font-style: italic;
+        }
+
         .error {
             background: #fee;
             color: #c33;
@@ -632,6 +754,10 @@
 
         // Display results
         function displayResults(data) {
+            console.log('Displaying results from local json:', data);
+
+            // TODO: do the update to BigQuery from here
+            
             const resultsDiv = document.getElementById('results');
             const resultsPanel = document.getElementById('resultsPanel');
             
@@ -968,6 +1094,154 @@
             }
         }
 
+        // Animated digital twin mapping visualization
+        function createTwinMapping(statusDiv) {
+            const container = document.createElement('div');
+            container.className = 'twin-mapping-container';
+            container.innerHTML = `
+                <div class="twin-canvas" id="twinCanvas"></div>
+                <div class="twin-progress" id="twinProgress">Building your digital twin...</div>
+                <div class="twin-status" id="twinStatus">Mapping your organization's cloud infrastructure</div>
+            `;
+            statusDiv.innerHTML = '';
+            statusDiv.appendChild(container);
+            
+            const canvas = document.getElementById('twinCanvas');
+            const progressDiv = document.getElementById('twinProgress');
+            const statusText = document.getElementById('twinStatus');
+            
+            // Animation phases
+            const phases = [
+                { 
+                    name: 'Discovering Vendors', 
+                    status: 'Scanning cloud infrastructure for vendor dependencies',
+                    nodes: [
+                        { type: 'vendor', label: 'Auth0', x: 15, y: 25, delay: 200 },
+                        { type: 'vendor', label: 'Stripe', x: 15, y: 50, delay: 400 },
+                        { type: 'vendor', label: 'SendGrid', x: 15, y: 75, delay: 600 }
+                    ]
+                },
+                {
+                    name: 'Mapping Services',
+                    status: 'Identifying services and their dependencies',
+                    nodes: [
+                        { type: 'service', label: 'Auth', x: 45, y: 25, delay: 800 },
+                        { type: 'service', label: 'Checkout', x: 45, y: 50, delay: 1000 },
+                        { type: 'service', label: 'Email', x: 45, y: 75, delay: 1200 }
+                    ],
+                    connections: [
+                        { from: { x: 15, y: 25 }, to: { x: 45, y: 25 }, delay: 1400 },
+                        { from: { x: 15, y: 50 }, to: { x: 45, y: 50 }, delay: 1600 },
+                        { from: { x: 15, y: 75 }, to: { x: 45, y: 75 }, delay: 1800 }
+                    ]
+                },
+                {
+                    name: 'Linking Business Processes',
+                    status: 'Connecting services to business processes',
+                    nodes: [
+                        { type: 'process', label: 'Login', x: 75, y: 20, delay: 2000 },
+                        { type: 'process', label: 'Payment', x: 75, y: 50, delay: 2200 },
+                        { type: 'process', label: 'Notify', x: 75, y: 75, delay: 2400 }
+                    ],
+                    connections: [
+                        { from: { x: 45, y: 25 }, to: { x: 75, y: 20 }, delay: 2600 },
+                        { from: { x: 45, y: 50 }, to: { x: 75, y: 50 }, delay: 2800 },
+                        { from: { x: 45, y: 75 }, to: { x: 75, y: 75 }, delay: 3000 }
+                    ]
+                },
+                {
+                    name: 'Mapping Compliance Controls',
+                    status: 'Linking compliance frameworks and controls',
+                    nodes: [
+                        { type: 'compliance', label: 'SOC2', x: 15, y: 90, delay: 3200 },
+                        { type: 'compliance', label: 'NIST', x: 45, y: 90, delay: 3400 },
+                        { type: 'compliance', label: 'ISO', x: 75, y: 90, delay: 3600 }
+                    ],
+                    connections: [
+                        { from: { x: 15, y: 25 }, to: { x: 15, y: 90 }, delay: 3800 },
+                        { from: { x: 15, y: 50 }, to: { x: 45, y: 90 }, delay: 4000 },
+                        { from: { x: 15, y: 75 }, to: { x: 75, y: 90 }, delay: 4200 }
+                    ]
+                }
+            ];
+            
+            let currentPhase = 0;
+            let nodeCount = 0;
+            let connectionCount = 0;
+            
+            function animatePhase(phaseIndex) {
+                if (phaseIndex >= phases.length) {
+                    progressDiv.textContent = '✅ Digital twin complete!';
+                    statusText.textContent = 'Your organization\'s risk dependency graph is ready';
+                    return;
+                }
+                
+                const phase = phases[phaseIndex];
+                progressDiv.innerHTML = `<span class="twin-progress-step">${phase.name}</span>`;
+                statusText.textContent = phase.status;
+                
+                // Animate nodes
+                if (phase.nodes) {
+                    phase.nodes.forEach(node => {
+                        setTimeout(() => {
+                            const nodeEl = document.createElement('div');
+                            nodeEl.className = `twin-node ${node.type}`;
+                            nodeEl.textContent = node.label;
+                            nodeEl.style.left = `${node.x}%`;
+                            nodeEl.style.top = `${node.y}%`;
+                            nodeEl.style.animationDelay = '0s';
+                            canvas.appendChild(nodeEl);
+                            nodeCount++;
+                        }, node.delay);
+                    });
+                }
+                
+                // Animate connections
+                if (phase.connections) {
+                    phase.connections.forEach(conn => {
+                        setTimeout(() => {
+                            // Calculate positions accounting for node size (60px = 30px radius)
+                            const fromX = (conn.from.x / 100) * canvas.offsetWidth + 30;
+                            const fromY = (conn.from.y / 100) * canvas.offsetHeight + 30;
+                            const toX = (conn.to.x / 100) * canvas.offsetWidth + 30;
+                            const toY = (conn.to.y / 100) * canvas.offsetHeight + 30;
+                            
+                            const dx = toX - fromX;
+                            const dy = toY - fromY;
+                            const length = Math.sqrt(dx * dx + dy * dy);
+                            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                            
+                            const connEl = document.createElement('div');
+                            connEl.className = 'twin-connection';
+                            connEl.style.width = `${length}px`;
+                            connEl.style.left = `${fromX}px`;
+                            connEl.style.top = `${fromY}px`;
+                            connEl.style.transform = `rotate(${angle}deg)`;
+                            connEl.style.animationDelay = '0s';
+                            canvas.appendChild(connEl);
+                            connectionCount++;
+                        }, conn.delay);
+                    });
+                }
+                
+                // Move to next phase
+                const phaseDuration = Math.max(
+                    ...(phase.nodes?.map(n => n.delay) || []),
+                    ...(phase.connections?.map(c => c.delay) || []),
+                    0
+                ) + 500;
+                
+                setTimeout(() => {
+                    animatePhase(phaseIndex + 1);
+                }, phaseDuration);
+            }
+            
+            // Start animation
+            animatePhase(0);
+            
+            return container;
+        }
+
         async function loadDiscovery() {
             const projectId = document.getElementById('projectId').value || 'vendor-risk-digital-twin';
             const btn = document.getElementById('loadDiscoveryBtn');
@@ -980,8 +1254,10 @@
             }
             
             btn.disabled = true;
-            btn.textContent = 'Loading...';
-            statusDiv.innerHTML = '<div class="loading"><div class="spinner"></div>Loading discovery into Neo4j...</div>';
+            btn.textContent = 'Building Twin...';
+            
+            // Show animated mapping visualization
+            const mappingContainer = createTwinMapping(statusDiv);
             
             try {
                 const response = await fetch('/api/discovery/load', {
@@ -993,7 +1269,10 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    statusDiv.innerHTML = '<div class="success">✅ Vendor inventory updated successfully! Risk database refreshed. You can now run impact assessments.</div>';
+                    // Wait a bit for animation to complete, then show success
+                    setTimeout(() => {
+                        statusDiv.innerHTML = '<div class="success">✅ Digital twin created successfully!<br><small style="color: #2e7d32; margin-top: 10px; display: block;">Your organization\'s risk dependency graph is now mapped in Neo4j. You can visualize it in the graph browser.</small></div>';
+                    }, 4500);
                     
                     if (devMode) {
                         addDevLog('✅ Data successfully loaded into Neo4j', 'success', 'logs');
@@ -1003,16 +1282,13 @@
                     }
                     
                     // Show Neo4j link after successful load
-                    loadNeo4jInfo();
-                    // Refresh vendors and stats after loading
                     setTimeout(() => {
+                        loadNeo4jInfo();
                         loadVendors();
                         loadGraphStats();
-                        // Show success message about being ready for simulation
-                        showMessage('✅ Vendor inventory updated successfully! You can now run risk impact assessments.', 'success');
-                        // Force refresh stats to update button state
+                        showMessage('✅ Digital twin created! Your organization\'s risk dependencies are now mapped. View the graph in Neo4j Browser.', 'success');
                         setTimeout(loadGraphStats, 500);
-                    }, 1000);
+                    }, 5000);
                 } else {
                     throw new Error(data.error || 'Failed to load discovery');
                 }

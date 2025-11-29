@@ -226,10 +226,12 @@ app.post('/api/simulate', async (req, res) => {
     }
 
     // Option 1: Use Cloud Run Service (automatic BigQuery saving via Pub/Sub)
-    // Controlled by env var ENABLE_CLOUD_RUN_SIMULATION
-    const enableCloudRun = process.env.ENABLE_CLOUD_RUN_SIMULATION === 'true';
+    // Re-enabled after redeployment with vendor name lookup fixes
+    // Can be disabled with: ENABLE_CLOUD_RUN_SIMULATION=false
+    const enableCloudRun = process.env.ENABLE_CLOUD_RUN_SIMULATION !== 'false';
     
-    if (enableCloudRun && useCloud && SIMULATION_SERVICE_URL) {
+    if (enableCloudRun && useCloud && SIMULATION_SERVICE_URL) { 
+
       try {
         // Normalize vendor name to match Neo4j storage (lowercase)
         // The vendor parameter comes from display_name, but we need the actual vendor name
@@ -262,13 +264,15 @@ app.post('/api/simulate', async (req, res) => {
             }
 
             const result = await response.json();
+            logger.info(`Cloud Run response: ${JSON.stringify(result)}`);
+            
             logger.info(`✅ Simulation completed via Cloud Run (auto-saved to BigQuery)`);
             
             // Debug: Log compliance data structure
             if (result.compliance_impact) {
               logger.info(`Compliance data received: summary=${Object.keys(result.compliance_impact.summary || {}).length}, frameworks=${Object.keys(result.compliance_impact.affected_frameworks || {}).length}`);
             } else {
-              logger.warn('⚠️ No compliance_impact in Cloud Run response');
+              // logger.warn('⚠️ No compliance_impact in Cloud Run response');
             }
             
             // Add timestamp if not present
@@ -285,7 +289,7 @@ app.post('/api/simulate', async (req, res) => {
         logger.warn(`Cloud Run simulation failed: ${cloudError.message}, falling back to local`);
         // Fall through to local simulation
       }
-    }
+    } 
 
     // Option 2: Fallback to local simulation (no BigQuery auto-save)
     if (!simulator) {

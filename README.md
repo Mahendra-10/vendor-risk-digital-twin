@@ -41,7 +41,7 @@ Sample Data → Neo4j Graph → Simulation Engine → Impact Report
 GCP APIs → Discovery Module → Neo4j Graph → Simulation Engine → Impact Report
 ```
 
-See [docs/architecture.md](docs/architecture.md) for detailed design.
+See [docs/design/architecture.md](docs/design/architecture.md) for detailed design.
 
 ## 🚀 Quick Start
 
@@ -208,9 +208,9 @@ flake8 scripts/
 
 ## 📚 Documentation
 
-- [Architecture Design](docs/architecture.md)
-- [Setup Guide](docs/setup_guide.md)
-- [API Design](docs/api_design.md)
+- [Architecture Design](docs/design/architecture.md)
+- [Setup Guide](docs/setup-guides/setup_guide.md)
+- [API Design](docs/design/api_design.md)
 - [Simulation Methodology](docs/simulation_methodology.md)
 
 ## 🤝 Contributing

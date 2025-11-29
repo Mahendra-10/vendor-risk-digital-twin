@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Documentation
+*.md
+docs/
+
+# Git
+.git/
+.gitignore
+
+# Local data
+*.log
+.env
+.env.local
+
+# Node modules (if any)
+node_modules/
+
+# Jupyter
+.ipynb_checkpoints/
+notebooks/
+
+# OS
+.DS_Store
+Thumbs.db
+

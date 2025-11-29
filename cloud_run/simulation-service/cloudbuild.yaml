@@ -1,0 +1,14 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-f'
+      - 'cloud_run/simulation-service/Dockerfile'
+      - '-t'
+      - '${_IMAGE_NAME}'
+      - '.'
+images:
+  - '${_IMAGE_NAME}'
+substitutions:
+  _IMAGE_NAME: 'gcr.io/vendor-risk-digital-twin/simulation-service'
+

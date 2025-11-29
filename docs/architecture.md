@@ -329,6 +329,12 @@ from google.cloud import logging_v2
 4. **Phase 4:** Compliance automation
 5. **Phase 5:** Production-ready API
 
+## Cloud Deployment Architecture
+
+For detailed information on how Cloud Run, Docker, and Neo4j Aura connect in the deployed system, see:
+
+- **[Cloud Run Architecture Documentation](cloud_run_architecture.md)** - Complete explanation of containerized deployment, service connections, and data flow
+
 ## References
 
 - [Neo4j Cypher Documentation](https://neo4j.com/docs/cypher-manual/)

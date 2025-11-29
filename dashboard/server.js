@@ -22,7 +22,7 @@ const PORT = process.env.PORT || 5001;
 
 // Cloud Run Simulation Service URL (for automatic BigQuery saving)
 const SIMULATION_SERVICE_URL = process.env.SIMULATION_SERVICE_URL || 
-  'https://simulation-service-wearla5naa-uc.a.run.app';
+  'https://simulation-service-16418516910.us-central1.run.app';
 
 // Setup logging
 const logger = setupLogging(process.env.LOG_LEVEL || 'INFO');
@@ -35,6 +35,9 @@ app.use(express.static(path.join(__dirname, 'templates')));
 // Global simulator instance
 let simulator = null;
 
+/**
+ * Initialize the simulator with Neo4j connection
+ */
 /**
  * Initialize the simulator with Neo4j connection
  */
@@ -65,6 +68,7 @@ async function initSimulator() {
     return true;
   } catch (error) {
     logger.error(`Failed to initialize simulator: ${error.message}`);
+    logger.warning('Server starting in OFFLINE MODE. Dashboard will load, but simulation features requiring Neo4j will be disabled.');
     return false;
   }
 }
@@ -183,14 +187,24 @@ app.post('/api/simulate', async (req, res) => {
     // Validate that Neo4j has data before running simulation
     const vendors = await getAvailableVendors();
     if (!vendors || vendors.length === 0) {
-      return res.status(400).json({ 
-        error: 'No vendor data found in Neo4j. Please "Fetch Latest Discovery" and "Load into Neo4j" first.',
-        requiresDataLoad: true
-      });
+      // If we are in offline mode (simulator not init), we might still want to try Cloud Run if enabled
+      if (!simulator && !process.env.ENABLE_CLOUD_RUN_SIMULATION) {
+         return res.status(503).json({ 
+          error: 'Simulator is in OFFLINE MODE (Neo4j unavailable). Please check database connection.',
+          requiresDataLoad: true
+        });
+      }
+      
+      if (simulator) {
+        return res.status(400).json({ 
+          error: 'No vendor data found in Neo4j. Please "Fetch Latest Discovery" and "Load into Neo4j" first.',
+          requiresDataLoad: true
+        });
+      }
     }
 
     // Warn if data hasn't been loaded in this session (but allow simulation)
-    if (lastDataLoadTime === null) {
+    if (lastDataLoadTime === null && simulator) {
       logger.warning(`Simulation requested but data hasn't been loaded in this session. Last load: ${lastDataLoadTime}`);
       // Don't block, but log a warning - data exists from previous session
     }
@@ -198,18 +212,24 @@ app.post('/api/simulate', async (req, res) => {
     // Normalize vendor name for validation (vendors list contains display_names)
     // We need to check if the vendor exists, accounting for case differences
     const normalizedVendor = vendor.toLowerCase().trim();
-    const vendorExists = vendors.some(v => v.toLowerCase().trim() === normalizedVendor);
     
-    if (!vendorExists) {
-      return res.status(400).json({ 
-        error: `Vendor "${vendor}" not found in Neo4j. Please ensure discovery data is loaded.`,
-        availableVendors: vendors
-      });
+    // Only validate against local Neo4j if we have it
+    if (vendors.length > 0) {
+      const vendorExists = vendors.some(v => v.toLowerCase().trim() === normalizedVendor);
+      
+      if (!vendorExists) {
+        return res.status(400).json({ 
+          error: `Vendor "${vendor}" not found in Neo4j. Please ensure discovery data is loaded.`,
+          availableVendors: vendors
+        });
+      }
     }
 
     // Option 1: Use Cloud Run Service (automatic BigQuery saving via Pub/Sub)
-    // Temporarily disabled to use local simulator with latest fixes
-    if (false && useCloud && SIMULATION_SERVICE_URL) {
+    // Controlled by env var ENABLE_CLOUD_RUN_SIMULATION
+    const enableCloudRun = process.env.ENABLE_CLOUD_RUN_SIMULATION === 'true';
+    
+    if (enableCloudRun && useCloud && SIMULATION_SERVICE_URL) {
       try {
         // Normalize vendor name to match Neo4j storage (lowercase)
         // The vendor parameter comes from display_name, but we need the actual vendor name
@@ -217,38 +237,50 @@ app.post('/api/simulate', async (req, res) => {
         logger.info(`Running simulation via Cloud Run: ${vendor} (normalized: ${normalizedVendor}) for ${durationHours} hours`);
         
         // Use Node.js built-in fetch (Node 18+)
-        const response = await fetch(`${SIMULATION_SERVICE_URL}/simulate`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            vendor: normalizedVendor,  // Send normalized name to match Neo4j
-            duration: durationHours
-          })
-        });
+        // Add timeout to prevent hanging
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || `Cloud Run service returned ${response.status}`);
-        }
+        try {
+            const response = await fetch(`${SIMULATION_SERVICE_URL}/simulate`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                vendor: normalizedVendor,  // Send normalized name to match Neo4j
+                duration: durationHours
+              }),
+              signal: controller.signal
+            });
+            
+            clearTimeout(timeoutId);
 
-        const result = await response.json();
-        logger.info(`✅ Simulation completed via Cloud Run (auto-saved to BigQuery)`);
-        
-        // Debug: Log compliance data structure
-        if (result.compliance_impact) {
-          logger.info(`Compliance data received: summary=${Object.keys(result.compliance_impact.summary || {}).length}, frameworks=${Object.keys(result.compliance_impact.affected_frameworks || {}).length}`);
-        } else {
-          logger.warn('⚠️ No compliance_impact in Cloud Run response');
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.error || `Cloud Run service returned ${response.status}`);
+            }
+
+            const result = await response.json();
+            logger.info(`✅ Simulation completed via Cloud Run (auto-saved to BigQuery)`);
+            
+            // Debug: Log compliance data structure
+            if (result.compliance_impact) {
+              logger.info(`Compliance data received: summary=${Object.keys(result.compliance_impact.summary || {}).length}, frameworks=${Object.keys(result.compliance_impact.affected_frameworks || {}).length}`);
+            } else {
+              logger.warn('⚠️ No compliance_impact in Cloud Run response');
+            }
+            
+            // Add timestamp if not present
+            if (!result.simulation_timestamp) {
+              result.simulation_timestamp = new Date().toISOString();
+            }
+            
+            return res.json(result);
+        } catch (fetchError) {
+            clearTimeout(timeoutId);
+            throw fetchError;
         }
-        
-        // Add timestamp if not present
-        if (!result.simulation_timestamp) {
-          result.simulation_timestamp = new Date().toISOString();
-        }
-        
-        return res.json(result);
       } catch (cloudError) {
         logger.warn(`Cloud Run simulation failed: ${cloudError.message}, falling back to local`);
         // Fall through to local simulation
@@ -257,8 +289,8 @@ app.post('/api/simulate', async (req, res) => {
 
     // Option 2: Fallback to local simulation (no BigQuery auto-save)
     if (!simulator) {
-      return res.status(500).json({ 
-        error: 'Simulator not initialized. Please use Cloud Run service or initialize local simulator.' 
+      return res.status(503).json({ 
+        error: 'Simulator not initialized (Offline Mode) and Cloud Run failed or disabled. Please check Neo4j connection.' 
       });
     }
 
@@ -284,7 +316,13 @@ let lastDataLoadTime = null;
  */
 app.get('/api/graph/stats', async (req, res) => {
   if (!simulator) {
-    return res.status(500).json({ error: 'Simulator not initialized' });
+    return res.json({
+        nodes: { Vendor: 0, Service: 0 },
+        relationships: {},
+        lastDataLoad: null,
+        dataLoaded: false,
+        status: 'offline'
+    });
   }
 
   try {
@@ -333,7 +371,8 @@ app.get('/api/graph/stats', async (req, res) => {
       nodes: nodeCounts,
       relationships: relCounts,
       lastDataLoad: lastDataLoadTime, // Include when data was last loaded
-      dataLoaded: lastDataLoadTime !== null
+      dataLoaded: lastDataLoadTime !== null,
+      status: 'online'
     });
   } catch (error) {
     logger.error(`Error fetching graph stats: ${error.message}`);
@@ -348,7 +387,7 @@ app.get('/api/graph/dependencies', async (req, res) => {
   const vendorName = req.query.vendor;
 
   if (!simulator) {
-    return res.status(500).json({ error: 'Simulator not initialized' });
+    return res.status(503).json({ error: 'Simulator not initialized (Offline Mode)' });
   }
 
   try {
@@ -654,7 +693,8 @@ app.get('/api/health', async (req, res) => {
       res.status(500).json({ status: 'unhealthy', neo4j: 'disconnected' });
     }
   } else {
-    res.status(500).json({ status: 'unhealthy', neo4j: 'not_initialized' });
+    // Return healthy but offline if simulator not initialized
+    res.json({ status: 'healthy', neo4j: 'offline', mode: 'offline' });
   }
 });
 
@@ -678,15 +718,16 @@ process.on('SIGINT', async () => {
 // Start server
 async function startServer() {
   const initialized = await initSimulator();
-  if (initialized) {
-    app.listen(PORT, () => {
-      logger.info('Starting Vendor Risk Digital Twin Dashboard...');
-      logger.info(`Dashboard available at: http://localhost:${PORT}`);
-    });
-  } else {
-    logger.error('Failed to initialize simulator. Please check Neo4j connection.');
-    process.exit(1);
-  }
+  
+  // Start server regardless of simulator initialization status
+  // This ensures the dashboard always loads, even if Neo4j is down
+  app.listen(PORT, () => {
+    logger.info('Starting Vendor Risk Digital Twin Dashboard...');
+    logger.info(`Dashboard available at: http://localhost:${PORT}`);
+    if (!initialized) {
+      logger.warning('⚠️  Neo4j connection failed. Dashboard running in OFFLINE MODE.');
+    }
+  });
 }
 
 startServer();

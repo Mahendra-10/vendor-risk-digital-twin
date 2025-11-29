@@ -70,10 +70,34 @@ class VendorFailureSimulator:
         Returns:
             Simulation results
         """
-        self.logger.info(f"🔴 Simulating {vendor_name} failure for {duration_hours} hours...")
+        # Normalize vendor name for Neo4j queries (vendors stored as lowercase)
+        normalized_vendor_name = vendor_name.lower().strip()
+        
+        # Preserve original vendor name for display (capitalize if it came in lowercase)
+        # Handle special cases for proper capitalization
+        if vendor_name and vendor_name[0].isupper():
+            display_vendor_name = vendor_name
+        else:
+            # Handle special vendor name cases
+            vendor_lower = normalized_vendor_name
+            if vendor_lower == 'auth0':
+                display_vendor_name = 'Auth0'
+            elif vendor_lower == 'sendgrid':
+                display_vendor_name = 'SendGrid'
+            elif vendor_lower == 'mongodb atlas':
+                display_vendor_name = 'MongoDB Atlas'
+            elif vendor_lower == 'twilio':
+                display_vendor_name = 'Twilio'
+            elif vendor_lower == 'stripe':
+                display_vendor_name = 'Stripe'
+            else:
+                # Default: capitalize first letter
+                display_vendor_name = vendor_name.capitalize()
+        
+        self.logger.info(f"🔴 Simulating {display_vendor_name} failure (normalized: {normalized_vendor_name}) for {duration_hours} hours...")
         
         simulation = {
-            'vendor': vendor_name,
+            'vendor': display_vendor_name,  # Use properly capitalized name for display
             'duration_hours': duration_hours,
             'timestamp': datetime.utcnow().isoformat(),
             'operational_impact': {},
@@ -83,16 +107,45 @@ class VendorFailureSimulator:
             'recommendations': []
         }
         
-        # Calculate operational impact
-        operational = self._calculate_operational_impact(vendor_name)
+        # Calculate operational impact (use normalized name for Neo4j query)
+        operational = self._calculate_operational_impact(normalized_vendor_name)
         simulation['operational_impact'] = operational
-        
+
         # Calculate financial impact
-        financial = self._calculate_financial_impact(vendor_name, duration_hours, operational)
+        financial = self._calculate_financial_impact(normalized_vendor_name, duration_hours, operational)
         simulation['financial_impact'] = financial
-        
-        # Calculate compliance impact
-        compliance = self._calculate_compliance_impact(vendor_name)
+
+        # Calculate compliance impact (only if there are affected services)
+        # Compliance impact only matters if vendor is actually being used
+        if operational.get('service_count', 0) > 0:
+            # Try display name first (compliance data uses "Auth0", "Stripe", etc.)
+            compliance = self._calculate_compliance_impact(display_vendor_name)
+            if not compliance.get('affected_frameworks'):
+                # Fallback to original vendor_name
+                compliance = self._calculate_compliance_impact(vendor_name)
+            if not compliance.get('affected_frameworks'):
+                # Fallback to normalized if original doesn't work
+                compliance = self._calculate_compliance_impact(normalized_vendor_name)
+            
+            # Special handling for multi-word vendors like "MongoDB Atlas"
+            if not compliance.get('affected_frameworks') and ' ' in vendor_name:
+                # Try with proper title case
+                title_case = vendor_name.title()
+                compliance = self._calculate_compliance_impact(title_case)
+            
+            # Log compliance result for debugging
+            if compliance.get('affected_frameworks'):
+                self.logger.info(f"Compliance impact calculated: {len(compliance['affected_frameworks'])} frameworks")
+            else:
+                self.logger.warning(f"No compliance data found for vendor: {display_vendor_name} (tried: {vendor_name}, {normalized_vendor_name})")
+        else:
+            # No services affected = no compliance impact
+            compliance = {
+                'affected_frameworks': {},
+                'impact_score': 0.0,
+                'summary': {}
+            }
+            self.logger.info("No services affected, skipping compliance impact calculation")
         simulation['compliance_impact'] = compliance
         
         # Calculate overall impact score
@@ -121,9 +174,10 @@ class VendorFailureSimulator:
         self.logger.info("Calculating operational impact...")
         
         with self.driver.session() as session:
-            # Find affected services
+            # Find affected services (use normalized vendor name)
+            normalized_vendor_name = vendor_name.lower().strip()
             query = """
-            MATCH (v:Vendor {name: $vendor_name})<-[:DEPENDS_ON]-(s:Service)
+            MATCH (v:Vendor {name: $normalized_vendor_name})<-[:DEPENDS_ON]-(s:Service)
             OPTIONAL MATCH (s)-[:SUPPORTS]->(bp:BusinessProcess)
             RETURN s.name as service_name,
                    s.type as service_type,
@@ -131,7 +185,7 @@ class VendorFailureSimulator:
                    s.customers_affected as customers_affected,
                    collect(DISTINCT bp.name) as business_processes
             """
-            result = session.run(query, vendor_name=vendor_name)
+            result = session.run(query, normalized_vendor_name=normalized_vendor_name)
             
             affected_services = []
             total_rpm = 0
@@ -221,16 +275,44 @@ class VendorFailureSimulator:
         Calculate compliance impact
         
         Args:
-            vendor_name: Vendor name
+            vendor_name: Vendor name (should be normalized lowercase)
         
         Returns:
             Compliance impact details
         """
         self.logger.info("Calculating compliance impact...")
         
-        # Get vendor's compliance controls
+        # Get vendor's compliance controls - try multiple name formats
         control_mappings = self.compliance_data.get('control_mappings', {})
+        
+        # Try exact match first (compliance data uses "Auth0", "Stripe", "MongoDB Atlas", "SendGrid", etc.)
         vendor_controls = control_mappings.get(vendor_name, {})
+        
+        # If not found, try common variations
+        if not vendor_controls:
+            vendor_lower = vendor_name.lower().strip()
+            
+            # Map common lowercase variations to compliance data keys
+            name_mapping = {
+                'auth0': 'Auth0',
+                'stripe': 'Stripe',
+                'sendgrid': 'SendGrid',
+                'mongodb atlas': 'MongoDB Atlas',
+                'twilio': 'Twilio'  # Not in compliance data, but for consistency
+            }
+            
+            if vendor_lower in name_mapping:
+                vendor_controls = control_mappings.get(name_mapping[vendor_lower], {})
+        
+        # If still not found, try capitalized (first letter uppercase)
+        if not vendor_controls and vendor_name:
+            capitalized = vendor_name.capitalize()
+            vendor_controls = control_mappings.get(capitalized, {})
+        
+        # Also try title case for multi-word vendors
+        if not vendor_controls and ' ' in vendor_name:
+            title_case = vendor_name.title()
+            vendor_controls = control_mappings.get(title_case, {})
         
         if not vendor_controls:
             return {
@@ -300,8 +382,10 @@ class VendorFailureSimulator:
         # Operational recommendations
         service_count = simulation['operational_impact']['service_count']
         if service_count > 0:
+            # Use display name if available, otherwise capitalize vendor name
+            vendor_display = vendor if vendor[0].isupper() else vendor.capitalize()
             recommendations.append(
-                f"Implement fallback mechanisms for {service_count} services depending on {vendor}"
+                f"Implement fallback mechanisms for {service_count} services depending on {vendor_display}"
             )
             recommendations.append(
                 f"Consider vendor diversification for critical business processes"
@@ -356,6 +440,20 @@ def main():
         choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'],
         help='Logging level'
     )
+    parser.add_argument(
+        '--bigquery',
+        action='store_true',
+        help='Write results to BigQuery'
+    )
+    parser.add_argument(
+        '--project-id',
+        help='GCP Project ID for BigQuery (default: from config)'
+    )
+    parser.add_argument(
+        '--dataset-id',
+        default='vendor_risk',
+        help='BigQuery Dataset ID (default: vendor_risk)'
+    )
     
     args = parser.parse_args()
     
@@ -385,6 +483,32 @@ def main():
         
         # Save results
         save_json_file(result, args.output)
+        
+        # Optionally write to BigQuery
+        if args.bigquery:
+            try:
+                from scripts.bigquery_loader import load_simulation_results
+                from google.cloud import bigquery
+                import os
+                
+                config_gcp = config.get('gcp', {})
+                # Try multiple sources for project ID
+                project_id = (args.project_id or 
+                             config_gcp.get('project_id') or 
+                             os.getenv('GCP_PROJECT_ID') or 
+                             'vendor-risk-digital-twin')
+                dataset_id = args.dataset_id or 'vendor_risk'
+                
+                if project_id:
+                    client = bigquery.Client(project=project_id)
+                    load_simulation_results(client, project_id, dataset_id, result)
+                    logger.info(f"✅ Results written to BigQuery: {project_id}.{dataset_id}.simulations")
+                else:
+                    logger.warning("⚠️  GCP project ID not found. Skipping BigQuery write.")
+            except ImportError:
+                logger.warning("⚠️  BigQuery libraries not installed. Install with: pip install google-cloud-bigquery")
+            except Exception as e:
+                logger.warning(f"⚠️  Failed to write to BigQuery: {e}")
         
         # Print summary
         logger.info("\n" + "="*60)

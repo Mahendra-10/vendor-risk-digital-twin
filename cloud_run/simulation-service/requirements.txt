@@ -1,0 +1,22 @@
+# Flask web framework
+Flask==3.0.0
+flask-cors==4.0.0
+
+# Google Cloud Platform
+google-cloud-secret-manager==2.18.0
+google-cloud-pubsub==2.23.0
+google-auth==2.27.0
+
+# Neo4j Graph Database
+neo4j==5.16.0
+
+# Configuration and utilities
+python-dotenv==1.0.0
+pyyaml==6.0.1
+
+# Data processing
+jsonschema==4.21.0
+
+# Logging
+structlog==24.1.0
+

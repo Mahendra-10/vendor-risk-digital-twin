@@ -13,6 +13,14 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
+# Try to import GCP Secret Manager (optional, for cloud deployment)
+try:
+    from scripts.gcp_secrets import get_neo4j_credentials
+    GCP_SECRETS_AVAILABLE = True
+except ImportError:
+    GCP_SECRETS_AVAILABLE = False
+    logging.getLogger(__name__).debug("GCP Secret Manager not available, using environment variables")
+
 
 def setup_logging(log_level: str = "INFO") -> logging.Logger:
     """
@@ -34,7 +42,8 @@ def setup_logging(log_level: str = "INFO") -> logging.Logger:
 
 def load_config(config_path: str = "config/config.yaml") -> Dict[str, Any]:
     """
-    Load configuration from YAML file with environment variable substitution
+    Load configuration from YAML file with environment variable substitution.
+    Also attempts to load Neo4j credentials from GCP Secret Manager if available.
     
     Args:
         config_path: Path to config file
@@ -55,8 +64,33 @@ def load_config(config_path: str = "config/config.yaml") -> Dict[str, Any]:
     with open(config_file, 'r') as f:
         config = yaml.safe_load(f)
     
-    # Substitute environment variables
+    # Substitute environment variables first (for non-Neo4j config)
     config = _substitute_env_vars(config)
+    
+    # Try to load Neo4j credentials from GCP Secret Manager (takes precedence over env vars)
+    if GCP_SECRETS_AVAILABLE and config.get('neo4j'):
+        try:
+            neo4j_creds = get_neo4j_credentials()
+            logger.debug(f"Secret Manager returned URI: {neo4j_creds.get('uri', 'None')}")
+            logger.debug(f"Current config URI: {config['neo4j'].get('uri', 'None')}")
+            
+            # Override config with Secret Manager values if available and not localhost
+            if neo4j_creds.get('uri'):
+                # Only use Secret Manager URI if it's not localhost (Aura or remote instance)
+                if not neo4j_creds['uri'].startswith('bolt://localhost') and not neo4j_creds['uri'].startswith('neo4j://127.0.0.1'):
+                    config['neo4j']['uri'] = neo4j_creds['uri']
+                    logger.info(f"✅ Using Neo4j URI from Secret Manager: {neo4j_creds['uri'][:50]}...")
+                else:
+                    logger.info("Secret Manager has localhost URI, keeping environment variable")
+            if neo4j_creds.get('user'):
+                config['neo4j']['user'] = neo4j_creds['user']
+            if neo4j_creds.get('password'):
+                config['neo4j']['password'] = neo4j_creds['password']
+            logger.info("Loaded Neo4j credentials from GCP Secret Manager")
+        except Exception as e:
+            logger.warning(f"Failed to load credentials from Secret Manager: {e}. Using environment variables.")
+            import traceback
+            logger.debug(traceback.format_exc())
     
     logger.info(f"Configuration loaded from {config_file}")
     return config

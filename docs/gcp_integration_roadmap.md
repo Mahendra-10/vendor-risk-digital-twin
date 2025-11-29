@@ -309,6 +309,10 @@ By completing this roadmap, you will gain hands-on experience with:
 
 **Deliverable:** Event-driven workflow connecting discovery → graph loading → simulation.
 
+**Documentation:** 
+- [Pub/Sub Automation Guide](pubsub_automation.md) - How automation works
+- [Testing Automation](testing_automation.md) - How to test and verify automation is working
+
 ---
 
 ### **Phase 6: Automation - Cloud Scheduler**
@@ -636,6 +640,8 @@ Phase 9: Advanced Features
 - [API Design](api_design.md)
 - [Setup Guide](setup_guide.md)
 - [Simulation Methodology](simulation_methodology.md)
+- [Pub/Sub Automation Guide](pubsub_automation.md) - How event-driven automation works
+- [Testing Automation](testing_automation.md) - Step-by-step testing procedures
 
 ---
 

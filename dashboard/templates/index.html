@@ -1187,8 +1187,9 @@
                             const nodeEl = document.createElement('div');
                             nodeEl.className = `twin-node ${node.type}`;
                             nodeEl.textContent = node.label;
-                            nodeEl.style.left = `${node.x}%`;
-                            nodeEl.style.top = `${node.y}%`;
+                            // Use percentage for responsive positioning
+                            nodeEl.style.left = `calc(${node.x}% - 30px)`;
+                            nodeEl.style.top = `calc(${node.y}% - 30px)`;
                             nodeEl.style.animationDelay = '0s';
                             canvas.appendChild(nodeEl);
                             nodeCount++;

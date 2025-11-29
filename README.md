@@ -211,7 +211,7 @@ flake8 scripts/
 - [Architecture Design](docs/design/architecture.md)
 - [Setup Guide](docs/setup-guides/setup_guide.md)
 - [API Design](docs/design/api_design.md)
-- [Simulation Methodology](docs/simulation_methodology.md)
+- [Simulation Methodology](docs/setup-guides/simulation_methodology.md)
 
 ## 🤝 Contributing
 

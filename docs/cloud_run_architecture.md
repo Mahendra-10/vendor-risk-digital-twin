@@ -78,7 +78,7 @@ The Vendor Risk Digital Twin simulation service uses a containerized architectur
 │                                                               │
 │  ┌─────────────────────────────────────────────────────┐    │
 │  │         Neo4j Database Instance                      │    │
-│  │         (d29c0138.databases.neo4j.io)                │    │
+│  │         (your-instance-id.databases.neo4j.io)        │    │
 │  │                                                       │    │
 │  │  Graph Data:                                         │    │
 │  │  • Vendor nodes (Stripe, Auth0, etc.)                │    │
@@ -206,7 +206,7 @@ The Vendor Risk Digital Twin simulation service uses a containerized architectur
 1. **Credential Retrieval:**
    ```python
    # app.py gets credentials from Secret Manager
-   uri = get_secret('neo4j-uri', project_id)  # neo4j+s://d29c0138.databases.neo4j.io
+   uri = get_secret('neo4j-uri', project_id)  # neo4j+s://your-instance-id.databases.neo4j.io
    user = get_secret('neo4j-user', project_id)  # neo4j
    password = get_secret('neo4j-password', project_id)
    ```
@@ -292,7 +292,7 @@ Step 4: Credential Retrieval
 Step 5: Neo4j Connection
    ↓
    • Creates Neo4j driver: GraphDatabase.driver(uri, auth=(user, password))
-   • Connects to: neo4j+s://d29c0138.databases.neo4j.io
+   • Connects to: neo4j+s://your-instance-id.databases.neo4j.io
    • Establishes HTTPS/TLS connection
 
 Step 6: Query Execution
@@ -503,7 +503,7 @@ gcloud run services logs read simulation-service --region us-central1
 # Test connection from local machine
 python -c "
 from neo4j import GraphDatabase
-driver = GraphDatabase.driver('neo4j+s://d29c0138.databases.neo4j.io', 
+driver = GraphDatabase.driver('neo4j+s://your-instance-id.databases.neo4j.io', 
                                auth=('neo4j', 'password'))
 driver.verify_connectivity()
 print('✅ Connected')

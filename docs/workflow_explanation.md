@@ -179,7 +179,7 @@ This document explains how the four main dashboard actions connect together in t
 **How to access:**
 - URL appears automatically after loading discovery into Neo4j
 - Format: `https://{instance-id}.databases.neo4j.io/browser/`
-- Example: `https://d29c0138.databases.neo4j.io/browser/`
+- Example: `https://{your-instance-id}.databases.neo4j.io/browser/`
 
 **What you can do:**
 1. **View the graph visually:**

@@ -25,7 +25,7 @@
 - ✅ `scripts/setup_secrets.py` - Setup script for creating secrets
 - ✅ Neo4j credentials stored in Secret Manager
 - ✅ Code updated to use Secret Manager with fallback
-- ✅ Documentation: `docs/phase1_secret_management.md`
+- ✅ Documentation: `docs/gcp-integration/phase1/phase1_secret_management.md`
 
 **Key Features:**
 - Automatic fallback chain: Secret Manager → Environment Variables → Defaults
@@ -56,7 +56,7 @@ gcloud secrets list --project=vendor-risk-digital-twin
 - ✅ `cloud_functions/graph_loader/main.py` - Graph Loader Cloud Function
 - ✅ `cloud_functions/bigquery_loader/main.py` - BigQuery Loader Cloud Function
 - ✅ Deployment scripts (`deploy.sh`) for each function
-- ✅ Documentation: `docs/phase2_cloud_functions.md`, `docs/phase2_enhancements.md`
+- ✅ Documentation: `docs/gcp-integration/phase2/phase2_cloud_functions.md`, `docs/gcp-integration/phase2/phase2_enhancements.md`
 
 **Key Features:**
 - Discovers Cloud Functions and Cloud Run services
@@ -170,7 +170,7 @@ python scripts/bigquery_loader.py --type simulation --data-file data/outputs/sim
   - Simulation Service (publishes events)
   - Graph Loader Function (subscribes)
   - BigQuery Loader Function (subscribes)
-- ✅ Documentation: `docs/pubsub_automation.md`
+- ✅ Documentation: `docs/gcp-integration/phase5/pubsub_automation.md`
 
 **Key Features:**
 - Event-driven automation
@@ -463,6 +463,6 @@ bq query --use_legacy_sql=false \
 
 **Related Documentation:**
 - [GCP Integration Roadmap](gcp_integration_roadmap.md)
-- [Pub/Sub Automation Guide](pubsub_automation.md)
-- [Phase 1: Secret Management](phase1_secret_management.md)
-- [Phase 2: Cloud Functions](phase2_cloud_functions.md)
+- [Pub/Sub Automation Guide](phase5/pubsub_automation.md)
+- [Phase 1: Secret Management](phase1/phase1_secret_management.md)
+- [Phase 2: Cloud Functions](phase2/phase2_cloud_functions.md)

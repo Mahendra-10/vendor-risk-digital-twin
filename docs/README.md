@@ -5,31 +5,26 @@ This directory contains all project documentation organized by category.
 ## 📁 Directory Structure
 
 ### 🚀 GCP Integration (`gcp-integration/`)
-GCP integration phases, roadmaps, and implementation guides.
+GCP integration phases, roadmaps, and implementation guides organized by phase.
 
+**Overview Files:**
 - `gcp_integration_roadmap.md` - Complete GCP integration roadmap
 - `gcp_integration_status.md` - Current status of GCP integration
 - `gcp_integration_insights.md` - Insights and value proposition
 - `gcpProgress.md` - GCP progress tracking
 - `gcp+vendor.md` - GCP and vendor integration notes
 - `theoretical_framework_gcp.md` - Theoretical framework
-- `phase1_secret_management.md` - Phase 1: Secret Management
-- `phase2_cloud_functions.md` - Phase 2: Cloud Functions
-- `phase2_enhancements.md` - Phase 2 enhancements
-- `phase5_readiness_assessment.md` - Phase 5: Pub/Sub readiness
-- `phase6_cloud_scheduler.md` - Phase 6: Cloud Scheduler
-- `cloud_run_architecture.md` - Cloud Run architecture
-- `cloud_run_dashboard_issue_analysis.md` - Cloud Run dashboard issues
-- `cloud_run_enablement_checklist.md` - Cloud Run enablement guide
-- `cloud_run_fix_summary.md` - Cloud Run fixes summary
-- `cloud_scheduler_technical.md` - Cloud Scheduler technical details
-- `pubsub_automation.md` - Pub/Sub automation guide
-- `pubsub_explained.md` - Pub/Sub explanation
-- `prove_pubsub_working.md` - Pub/Sub verification
-- `test_pubsub_verification.md` - Pub/Sub testing guide
 - `testing_automation.md` - Automation testing
-- `local_vs_cloud_run_explanation.md` - Local vs Cloud Run comparison
-- `why_url_fix_resolves_issue.md` - URL fix explanation
+
+**Phase-Specific Documentation:**
+- `phase1/` - Secret Management & Configuration
+- `phase2/` - Cloud Functions (Discovery, Graph Loader, BigQuery Loader)
+- `phase3/` - Cloud Run (Simulation Service)
+- `phase5/` - Pub/Sub (Event-Driven Architecture)
+- `phase6/` - Cloud Scheduler (Automation)
+- `phase7/` - Monitoring & Observability
+
+See `gcp-integration/README.md` for detailed navigation.
 
 ### 🏗️ Architecture & Design (`design/`)
 System architecture, API design, and workflow documentation.
@@ -89,7 +84,7 @@ Screenshots and visual documentation.
 **GCP Integration:**
 - Overview: `gcp-integration/gcp_integration_roadmap.md`
 - Status: `gcp-integration/gcp_integration_status.md`
-- Phase guides: `gcp-integration/phase*.md`
+- Phase guides: See `gcp-integration/README.md` for organized phase documentation
 
 **Architecture:**
 - System design: `design/architecture.md`

@@ -174,7 +174,7 @@
     }
   ],
   "discovery_metadata": {
-    "discovery_timestamp": "2025-11-29T01:27:06.142759",
+    "discovery_timestamp": "2025-12-01T10:00:08.316097",
     "project_id": "vendor-risk-digital-twin",
     "source": "gcp_discovery",
     "cloud_functions_count": 0,

@@ -52,6 +52,22 @@ steps:
       - '.'
     waitFor: ['verify-source-code']
 
+  # Step 3.5: Verify what's in the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'verify-docker-image'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "🔍 Verifying Docker image contents..."
+        echo ""
+        echo "Checking app.py in the built image:"
+        docker run --rm --entrypoint cat gcr.io/$PROJECT_ID/simulation-service:latest /app/app.py | grep -n "from scripts" | head -5 || echo "❌ Could not read app.py from image"
+        echo ""
+        echo "Checking if scripts directory exists in image:"
+        docker run --rm --entrypoint ls gcr.io/$PROJECT_ID/simulation-service:latest -la /app/scripts/ | head -10 || echo "❌ Could not list scripts directory"
+    waitFor: ['build-simulation-service']
+
   # Step 4: Deploy Cloud Run Simulation Service
   - name: 'gcr.io/cloud-builders/gcloud'
     id: 'deploy-simulation-service'

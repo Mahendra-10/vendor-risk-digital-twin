@@ -70,9 +70,21 @@ steps:
         docker run --rm --entrypoint ls gcr.io/$PROJECT_ID/simulation-service:latest -la /app/scripts/ | head -10 || echo "❌ Could not list scripts directory"
         echo ""
         echo "Getting image digest for deployment:"
-        IMAGE_DIGEST=$(docker inspect gcr.io/$$PROJECT_ID/simulation-service:latest --format='{{index .RepoDigests 0}}' | cut -d'@' -f2 || docker inspect gcr.io/$$PROJECT_ID/simulation-service:latest --format='{{.Id}}')
+        # Try multiple methods to get the digest
+        IMAGE_DIGEST=$(docker inspect gcr.io/$$PROJECT_ID/simulation-service:latest --format='{{index .RepoDigests 0}}' 2>/dev/null | cut -d'@' -f2)
+        if [ -z "$$IMAGE_DIGEST" ]; then
+          IMAGE_DIGEST=$(docker inspect gcr.io/$$PROJECT_ID/simulation-service:latest --format='{{.Id}}' 2>/dev/null)
+        fi
+        if [ -z "$$IMAGE_DIGEST" ]; then
+          # Fallback: use image ID from docker images
+          IMAGE_DIGEST=$(docker images gcr.io/$$PROJECT_ID/simulation-service:latest --format '{{.ID}}' | head -1)
+        fi
         echo "$$IMAGE_DIGEST" > /workspace/image_digest.txt
         echo "Image digest: $$IMAGE_DIGEST"
+        if [ -z "$$IMAGE_DIGEST" ]; then
+          echo "⚠️  WARNING: Could not get image digest, will use 'latest' tag"
+          echo "latest" > /workspace/image_digest.txt
+        fi
     waitFor: ['build-simulation-service']
 
   # Step 4: Deploy Cloud Run Simulation Service using image digest
@@ -83,10 +95,17 @@ steps:
       - '-c'
       - |
         IMAGE_DIGEST=$(cat /workspace/image_digest.txt)
-        echo "🚀 Deploying with image digest: $$IMAGE_DIGEST"
-        echo "Full image: gcr.io/$$PROJECT_ID/simulation-service@$$IMAGE_DIGEST"
+        echo "🚀 Deploying with image: $$IMAGE_DIGEST"
+        if [ "$$IMAGE_DIGEST" = "latest" ]; then
+          echo "Using 'latest' tag (digest not available)"
+          IMAGE_REF="gcr.io/$PROJECT_ID/simulation-service:latest"
+        else
+          echo "Using image digest: $$IMAGE_DIGEST"
+          IMAGE_REF="gcr.io/$PROJECT_ID/simulation-service@$$IMAGE_DIGEST"
+        fi
+        echo "Full image: $$IMAGE_REF"
         gcloud run deploy simulation-service \
-          --image gcr.io/$$PROJECT_ID/simulation-service@$$IMAGE_DIGEST \
+          --image "$$IMAGE_REF" \
           --region us-central1 \
           --platform managed \
           --allow-unauthenticated \

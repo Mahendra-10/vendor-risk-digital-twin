@@ -24,8 +24,12 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from google.cloud import pubsub_v1
 
-# Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+# Add app directory to path for imports
+# In Docker: app.py is at /app/app.py, scripts/ is at /app/scripts/
+# PYTHONPATH is already set to /app, but we ensure it's in sys.path
+app_dir = str(Path(__file__).parent)  # /app
+if app_dir not in sys.path:
+    sys.path.insert(0, app_dir)
 
 # Import simulation module (updated path: scripts/simulation/simulate_failure.py)
 # Fixed import path: scripts.simulation.simulate_failure (not scripts.simulate_failure)

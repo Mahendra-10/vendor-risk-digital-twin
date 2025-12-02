@@ -94,14 +94,14 @@ steps:
     args:
       - '-c'
       - |
-        IMAGE_DIGEST=$(cat /workspace/image_digest.txt)
-        echo "🚀 Deploying with image: $$IMAGE_DIGEST"
-        if [ "$$IMAGE_DIGEST" = "latest" ]; then
-          echo "Using 'latest' tag (digest not available)"
-          IMAGE_REF="gcr.io/$PROJECT_ID/simulation-service:latest"
-        else
+        IMAGE_DIGEST=$(cat /workspace/image_digest.txt 2>/dev/null || echo "latest")
+        echo "🚀 Deploying simulation-service..."
+        if [ -n "$$IMAGE_DIGEST" ] && [ "$$IMAGE_DIGEST" != "latest" ]; then
           echo "Using image digest: $$IMAGE_DIGEST"
           IMAGE_REF="gcr.io/$PROJECT_ID/simulation-service@$$IMAGE_DIGEST"
+        else
+          echo "Using 'latest' tag (digest not available or using fallback)"
+          IMAGE_REF="gcr.io/$PROJECT_ID/simulation-service:latest"
         fi
         echo "Full image: $$IMAGE_REF"
         gcloud run deploy simulation-service \

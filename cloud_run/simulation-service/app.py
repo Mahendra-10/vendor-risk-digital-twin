@@ -25,13 +25,13 @@ from google.cloud import pubsub_v1
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from scripts.simulate_failure import VendorFailureSimulator
+from scripts.simulation.simulate_failure import VendorFailureSimulator
 from scripts.utils import (
     setup_logging,
     load_config,
     validate_env_vars
 )
-from scripts.gcp_secrets import get_secret
+from scripts.gcp.gcp_secrets import get_secret
 
 # Configure logging
 logging.basicConfig(

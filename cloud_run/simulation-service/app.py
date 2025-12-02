@@ -292,12 +292,9 @@ if __name__ == '__main__':
     # Get port from environment (Cloud Run sets PORT automatically)
     port = int(os.environ.get('PORT', 8080))
     
-    # Initialize simulator on startup (optional, can be lazy)
-    try:
-        init_simulator()
-        logger.info("Simulator pre-initialized")
-    except Exception as e:
-        logger.warning(f"Could not pre-initialize simulator: {e}. Will initialize on first request.")
+    # Don't initialize simulator on startup - use lazy initialization
+    # This prevents startup failures if Neo4j is temporarily unavailable
+    logger.info("Starting Flask app - simulator will initialize on first request")
     
     # Run Flask app
     app.run(host='0.0.0.0', port=port, debug=False)

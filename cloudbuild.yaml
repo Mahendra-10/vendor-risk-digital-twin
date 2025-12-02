@@ -49,6 +49,8 @@ steps:
       - 'cloud_run/simulation-service/Dockerfile'
       - '-t'
       - 'gcr.io/$PROJECT_ID/simulation-service:latest'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/simulation-service:$SHORT_SHA'
       - '.'
     waitFor: ['verify-source-code']
 
@@ -77,6 +79,7 @@ steps:
       - 'simulation-service'
       - '--image'
       - 'gcr.io/$PROJECT_ID/simulation-service:latest'
+      - '--no-traffic'
       - '--region'
       - 'us-central1'
       - '--platform'

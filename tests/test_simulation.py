@@ -4,7 +4,7 @@ Unit tests for Vendor Failure Simulation module
 
 import pytest
 from unittest.mock import Mock, patch, MagicMock
-from scripts.simulate_failure import VendorFailureSimulator
+from scripts.simulation.simulate_failure import VendorFailureSimulator
 
 
 class TestVendorFailureSimulator:
@@ -13,7 +13,7 @@ class TestVendorFailureSimulator:
     @pytest.fixture
     def simulator(self):
         """Create simulator instance for testing"""
-        with patch('scripts.simulate_failure.GraphDatabase.driver'):
+        with patch('scripts.simulation.simulate_failure.GraphDatabase.driver'):
             sim = VendorFailureSimulator(
                 neo4j_uri='bolt://localhost:7687',
                 neo4j_user='neo4j',

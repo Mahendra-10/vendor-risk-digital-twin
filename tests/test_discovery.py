@@ -4,7 +4,7 @@ Unit tests for GCP Discovery module
 
 import pytest
 from unittest.mock import Mock, patch, MagicMock
-from scripts.gcp_discovery import GCPDiscovery
+from scripts.gcp.gcp_discovery import GCPDiscovery
 
 
 class TestGCPDiscovery:
@@ -13,8 +13,8 @@ class TestGCPDiscovery:
     @pytest.fixture
     def discovery(self):
         """Create GCPDiscovery instance for testing"""
-        with patch('scripts.gcp_discovery.functions_v1.CloudFunctionsServiceClient'):
-            with patch('scripts.gcp_discovery.run_v2.ServicesClient'):
+        with patch('scripts.gcp.gcp_discovery.functions_v1.CloudFunctionsServiceClient'):
+            with patch('scripts.gcp.gcp_discovery.run_v2.ServicesClient'):
                 return GCPDiscovery(project_id='test-project')
     
     def test_initialization(self, discovery):

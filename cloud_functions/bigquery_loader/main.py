@@ -13,7 +13,8 @@ import base64
 import sys
 from pathlib import Path
 from typing import Dict, Any
-from google.cloud import bigquery, pubsub_v1
+from google.cloud import bigquery
+import google.cloud.pubsub_v1 as pubsub_v1
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))

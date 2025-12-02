@@ -75,33 +75,27 @@ steps:
         echo "Image digest: $IMAGE_DIGEST"
     waitFor: ['build-simulation-service']
 
-  # Step 4: Deploy Cloud Run Simulation Service
+  # Step 4: Deploy Cloud Run Simulation Service using image digest
   - name: 'gcr.io/cloud-builders/gcloud'
     id: 'deploy-simulation-service'
+    entrypoint: 'bash'
     args:
-      - 'run'
-      - 'deploy'
-      - 'simulation-service'
-      - '--image'
-      - 'gcr.io/$PROJECT_ID/simulation-service:latest'
-      - '--no-traffic'
-      - '--region'
-      - 'us-central1'
-      - '--platform'
-      - 'managed'
-      - '--allow-unauthenticated'
-      - '--memory'
-      - '512Mi'
-      - '--cpu'
-      - '1'
-      - '--timeout'
-      - '300'
-      - '--max-instances'
-      - '10'
-      - '--set-env-vars'
-      - 'GCP_PROJECT_ID=$PROJECT_ID'
-      - '--set-secrets'
-      - 'NEO4J_URI=neo4j-uri:latest,NEO4J_USER=neo4j-user:latest,NEO4J_PASSWORD=neo4j-password:latest'
+      - '-c'
+      - |
+        IMAGE_DIGEST=$(cat /workspace/image_digest.txt | cut -d'=' -f2)
+        echo "🚀 Deploying with image digest: $IMAGE_DIGEST"
+        echo "Full image: gcr.io/$PROJECT_ID/simulation-service@$IMAGE_DIGEST"
+        gcloud run deploy simulation-service \
+          --image gcr.io/$PROJECT_ID/simulation-service@$IMAGE_DIGEST \
+          --region us-central1 \
+          --platform managed \
+          --allow-unauthenticated \
+          --memory 512Mi \
+          --cpu 1 \
+          --timeout 300 \
+          --max-instances 10 \
+          --set-env-vars GCP_PROJECT_ID=$PROJECT_ID \
+          --set-secrets NEO4J_URI=neo4j-uri:latest,NEO4J_USER=neo4j-user:latest,NEO4J_PASSWORD=neo4j-password:latest
     waitFor: ['verify-docker-image']
 
   # Step 4: Deploy Discovery Cloud Function (optional - continue on error)

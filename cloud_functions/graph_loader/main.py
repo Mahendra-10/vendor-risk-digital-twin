@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 from typing import Dict, Any
 from google.cloud import storage
-import google.cloud.pubsub_v1 as pubsub_v1
+from google.cloud import pubsub_v1
 from neo4j import GraphDatabase
 
 # Add parent directory to path for imports

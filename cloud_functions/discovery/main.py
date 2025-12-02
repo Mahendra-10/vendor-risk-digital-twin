@@ -15,7 +15,7 @@ from datetime import datetime
 from typing import Dict, Any
 from google.cloud import storage
 from google.cloud import functions_v1, run_v2
-import google.cloud.pubsub_v1 as pubsub_v1
+from google.cloud import pubsub_v1
 
 # Configure logging for Cloud Functions
 logging.basicConfig(

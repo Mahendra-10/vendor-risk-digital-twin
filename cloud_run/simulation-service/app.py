@@ -20,7 +20,7 @@ from datetime import datetime
 from typing import Dict, Any, Optional
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import google.cloud.pubsub_v1 as pubsub_v1
+from google.cloud import pubsub_v1
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))

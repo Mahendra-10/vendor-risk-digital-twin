@@ -25,6 +25,7 @@ from google.cloud import pubsub_v1
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
+# Import simulation module (updated path: scripts/simulation/simulate_failure.py)
 from scripts.simulation.simulate_failure import VendorFailureSimulator
 from scripts.utils import (
     setup_logging,

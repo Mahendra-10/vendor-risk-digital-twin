@@ -24,10 +24,13 @@ steps:
     args:
       - 'build'
       - '--no-cache'
+      - '--pull'
       - '-f'
       - 'cloud_run/simulation-service/Dockerfile'
       - '-t'
       - 'gcr.io/$PROJECT_ID/simulation-service:latest'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/simulation-service:$COMMIT_SHA'
       - '.'
     waitFor: ['-']
 
@@ -129,6 +132,7 @@ steps:
 # Images to push (happens automatically after build step)
 images:
   - 'gcr.io/$PROJECT_ID/simulation-service:latest'
+  - 'gcr.io/$PROJECT_ID/simulation-service:$COMMIT_SHA'
 
 # Options
 options:

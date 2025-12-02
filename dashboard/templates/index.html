@@ -280,6 +280,155 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* Simulation Progress Animation */
+        .simulation-progress {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .simulation-progress h3 {
+            color: #1e3c72;
+            margin-bottom: 25px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        .progress-stage {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            transition: all 0.6s ease;
+            position: relative;
+        }
+
+        .progress-stage.pending {
+            background: #f5f5f5;
+            color: #999;
+        }
+
+        .progress-stage.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            animation: pulse 2s infinite;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .progress-stage.complete {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .progress-stage.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.85; }
+        }
+
+        .stage-icon {
+            font-size: 1.8em;
+            margin-right: 15px;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .progress-stage.active .stage-icon {
+            animation: bounce 1.5s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .stage-details {
+            flex: 1;
+        }
+
+        .stage-label {
+            font-weight: 600;
+            font-size: 1em;
+            margin-bottom: 5px;
+        }
+
+        .stage-service {
+            font-size: 0.85em;
+            opacity: 0.8;
+            margin-top: 3px;
+        }
+
+        .progress-stage.pending .stage-service {
+            opacity: 0.6;
+        }
+
+        .stage-status {
+            font-size: 1.5em;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .progress-connection {
+            height: 2px;
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));
+            margin: 5px 0 5px 55px;
+            border-radius: 2px;
+            transition: all 0.8s ease;
+        }
+
+        .progress-connection.active {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            animation: drawLine 1.2s ease-out;
+            box-shadow: 0 0 8px rgba(102, 126, 234, 0.5);
+        }
+
+        @keyframes drawLine {
+            from { 
+                width: 0;
+                opacity: 0;
+            }
+            to { 
+                width: calc(100% - 55px);
+                opacity: 1;
+            }
+        }
+
+        .progress-bar-container {
+            margin-top: 25px;
+            height: 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 4px;
+            transition: width 0.8s ease;
+            width: 0%;
+        }
+
+        .stage-details-text {
+            font-size: 0.9em;
+            margin-top: 5px;
+            font-style: italic;
+            opacity: 0.9;
+        }
+
         /* Digital Twin Mapping Animation */
         .twin-mapping-container {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -657,10 +806,255 @@
                 <p style="color: #666; margin-bottom: 20px; font-size: 0.9em;">
                     Detailed impact analysis and compliance risk assessment. This report can be exported for audit documentation.
                 </p>
+                <!-- Simulation Progress Animation (hidden by default) -->
+                <div id="simulation-progress" class="simulation-progress" style="display: none;">
+                    <h3>🔄 Running Simulation: <span id="sim-vendor"></span> (<span id="sim-duration"></span> hours)</h3>
+                    
+                    <div class="progress-container">
+                        <div class="progress-stage pending" data-stage="request">
+                            <span class="stage-icon">🌐</span>
+                            <div class="stage-details">
+                                <div class="stage-label">Sending request to Cloud Run</div>
+                                <div class="stage-service">Cloud Run API</div>
+                            </div>
+                            <span class="stage-status">⏳</span>
+                        </div>
+                        
+                        <div class="progress-connection"></div>
+                        
+                        <div class="progress-stage pending" data-stage="credentials">
+                            <span class="stage-icon">🔐</span>
+                            <div class="stage-details">
+                                <div class="stage-label">Retrieving credentials</div>
+                                <div class="stage-service">Secret Manager</div>
+                            </div>
+                            <span class="stage-status">⏳</span>
+                        </div>
+                        
+                        <div class="progress-connection"></div>
+                        
+                        <div class="progress-stage pending" data-stage="neo4j-connect">
+                            <span class="stage-icon">🕸️</span>
+                            <div class="stage-details">
+                                <div class="stage-label">Connecting to Neo4j</div>
+                                <div class="stage-service">Neo4j Aura</div>
+                            </div>
+                            <span class="stage-status">⏳</span>
+                        </div>
+                        
+                        <div class="progress-connection"></div>
+                        
+                        <div class="progress-stage pending" data-stage="query">
+                            <span class="stage-icon">🔍</span>
+                            <div class="stage-details">
+                                <div class="stage-label">Querying vendor dependencies</div>
+                                <div class="stage-service">Neo4j Graph</div>
+                            </div>
+                            <span class="stage-status">⏳</span>
+                        </div>
+                        
+                        <div class="progress-connection"></div>
+                        
+                        <div class="progress-stage pending" data-stage="operational">
+                            <span class="stage-icon">⚙️</span>
+                            <div class="stage-details">
+                                <div class="stage-label">Calculating operational impact</div>
+                                <div class="stage-service">Simulation Engine</div>
+                            </div>
+                            <span class="stage-status">⏳</span>
+                        </div>
+                        
+                        <div class="progress-connection"></div>
+                        
+                        <div class="progress-stage pending" data-stage="financial">
+                            <span class="stage-icon">💰</span>
+                            <div class="stage-details">
+                                <div class="stage-label">Calculating financial impact</div>
+                                <div class="stage-service">Simulation Engine</div>
+                            </div>
+                            <span class="stage-status">⏳</span>
+                        </div>
+                        
+                        <div class="progress-connection"></div>
+                        
+                        <div class="progress-stage pending" data-stage="compliance">
+                            <span class="stage-icon">📋</span>
+                            <div class="stage-details">
+                                <div class="stage-label">Calculating compliance impact</div>
+                                <div class="stage-service">Simulation Engine</div>
+                            </div>
+                            <span class="stage-status">⏳</span>
+                        </div>
+                        
+                        <div class="progress-connection"></div>
+                        
+                        <div class="progress-stage pending" data-stage="pubsub">
+                            <span class="stage-icon">📡</span>
+                            <div class="stage-details">
+                                <div class="stage-label">Publishing results to Pub/Sub</div>
+                                <div class="stage-service">Cloud Pub/Sub</div>
+                            </div>
+                            <span class="stage-status">⏳</span>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="progress-bar-fill"></div>
+                    </div>
+                </div>
+                
                 <div id="results"></div>
             </div>
         </div>
     </div>
+
+    <script>
+        // Simulation Progress Animation Manager
+        class SimulationProgressAnimation {
+            constructor() {
+                this.stages = [
+                    { id: 'request', delay: 0 },
+                    { id: 'credentials', delay: 800 },
+                    { id: 'neo4j-connect', delay: 1600 },
+                    { id: 'query', delay: 2500 },
+                    { id: 'operational', delay: 3500 },
+                    { id: 'financial', delay: 4500 },
+                    { id: 'compliance', delay: 5500 },
+                    { id: 'pubsub', delay: 6500 }
+                ];
+                this.currentStageIndex = 0;
+                this.timeouts = [];
+            }
+
+            start(vendor, duration) {
+                // Show progress container
+                const progressDiv = document.getElementById('simulation-progress');
+                const resultsDiv = document.getElementById('results');
+                progressDiv.style.display = 'block';
+                resultsDiv.innerHTML = '';
+                
+                // Update header
+                document.getElementById('sim-vendor').textContent = vendor;
+                document.getElementById('sim-duration').textContent = duration;
+                
+                // Reset all stages to pending
+                this.stages.forEach(stage => {
+                    const stageEl = document.querySelector(`[data-stage="${stage.id}"]`);
+                    if (stageEl) {
+                        stageEl.className = 'progress-stage pending';
+                        const statusEl = stageEl.querySelector('.stage-status');
+                        if (statusEl) statusEl.textContent = '⏳';
+                    }
+                });
+                
+                // Reset progress bar
+                document.getElementById('progress-bar-fill').style.width = '0%';
+                
+                // Start animation
+                this.currentStageIndex = 0;
+                this.animateStages();
+            }
+
+            animateStages() {
+                // Clear any existing timeouts
+                this.timeouts.forEach(timeout => clearTimeout(timeout));
+                this.timeouts = [];
+                
+                this.stages.forEach((stage, index) => {
+                    const timeout = setTimeout(() => {
+                        this.updateStage(stage.id, 'active');
+                        this.updateProgressBar((index + 1) / this.stages.length * 100);
+                    }, stage.delay);
+                    this.timeouts.push(timeout);
+                });
+            }
+
+            updateStage(stageId, status, details = null) {
+                const stageEl = document.querySelector(`[data-stage="${stageId}"]`);
+                if (!stageEl) return;
+                
+                // Remove all status classes
+                stageEl.classList.remove('pending', 'active', 'complete', 'error');
+                stageEl.classList.add(status);
+                
+                // Update status icon
+                const statusEl = stageEl.querySelector('.stage-status');
+                if (statusEl) {
+                    if (status === 'active') {
+                        statusEl.textContent = '⏳';
+                    } else if (status === 'complete') {
+                        statusEl.textContent = '✅';
+                    } else if (status === 'error') {
+                        statusEl.textContent = '❌';
+                    } else {
+                        statusEl.textContent = '⏳';
+                    }
+                }
+                
+                // Add details if provided
+                if (details) {
+                    const detailsEl = stageEl.querySelector('.stage-details');
+                    if (detailsEl && !detailsEl.querySelector('.stage-details-text')) {
+                        const detailsText = document.createElement('div');
+                        detailsText.className = 'stage-details-text';
+                        detailsText.textContent = details;
+                        detailsEl.appendChild(detailsText);
+                    }
+                }
+                
+                // Activate connection line
+                const connectionEl = stageEl.previousElementSibling;
+                if (connectionEl && connectionEl.classList.contains('progress-connection')) {
+                    if (status === 'active' || status === 'complete') {
+                        connectionEl.classList.add('active');
+                    }
+                }
+            }
+
+            updateProgressBar(percentage) {
+                const progressBar = document.getElementById('progress-bar-fill');
+                if (progressBar) {
+                    progressBar.style.width = `${Math.min(percentage, 100)}%`;
+                }
+            }
+
+            complete() {
+                // Mark all stages as complete
+                this.stages.forEach(stage => {
+                    this.updateStage(stage.id, 'complete');
+                });
+                this.updateProgressBar(100);
+                
+                // Hide after a short delay (increased to let users see completion)
+                setTimeout(() => {
+                    const progressDiv = document.getElementById('simulation-progress');
+                    if (progressDiv) {
+                        progressDiv.style.display = 'none';
+                    }
+                }, 3000);
+            }
+
+            error(errorMessage) {
+                // Mark current stage as error
+                if (this.currentStageIndex < this.stages.length) {
+                    const currentStage = this.stages[this.currentStageIndex];
+                    this.updateStage(currentStage.id, 'error');
+                }
+                
+                // Clear all timeouts
+                this.timeouts.forEach(timeout => clearTimeout(timeout));
+            }
+
+            stop() {
+                // Clear all timeouts
+                this.timeouts.forEach(timeout => clearTimeout(timeout));
+                this.timeouts = [];
+            }
+        }
+
+        // Create global instance
+        const progressAnimation = new SimulationProgressAnimation();
+    </script>
 
     <script>
         // Load vendors on page load
@@ -897,16 +1291,13 @@
                 return;
             }
 
-            // Show loading
+            // Show loading animation
             btn.disabled = true;
             btn.textContent = 'Running Simulation...';
-            resultsDiv.innerHTML = `
-                <div class="loading">
-                    <div class="spinner"></div>
-                    <p>Simulating ${vendor} failure for ${duration} hours...</p>
-                </div>
-            `;
             document.getElementById('resultsPanel').style.display = 'block';
+            
+            // Start progress animation
+            progressAnimation.start(vendor, duration);
 
             // Check if using old data before simulation
             const statsResponse = await fetch('/api/graph/stats');
@@ -962,27 +1353,39 @@
                     return;
                 }
 
-                displayResults(data);
+                // Complete animation
+                progressAnimation.complete();
                 
-                // Show message about automatic BigQuery saving
-                if (!data.warning) {
-                    showMessage('✅ Risk assessment completed! Results have been automatically logged to the audit database for compliance reporting.', 'success');
-                } else {
-                    showMessage('⚠️ Assessment completed locally. For audit compliance, use the cloud service to automatically log results.', 'warning');
-                }
+                // Small delay to show completion, then display results
+                setTimeout(() => {
+                    displayResults(data);
+                    
+                    // Show message about automatic BigQuery saving
+                    if (!data.warning) {
+                        showMessage('✅ Risk assessment completed! Results have been automatically logged to the audit database for compliance reporting.', 'success');
+                    } else {
+                        showMessage('⚠️ Assessment completed locally. For audit compliance, use the cloud service to automatically log results.', 'warning');
+                    }
+                }, 500);
             } catch (error) {
                 console.error('Simulation error:', error);
+                
+                // Stop animation and show error
+                progressAnimation.error(error.message);
+                
                 // Check if error is about missing data
                 if (error.message.includes('No vendor data') || error.message.includes('not found in Neo4j')) {
                     showMessage('⚠️ ' + error.message + ' Please update the risk database in the Discovery Panel first.', 'error');
                     loadVendors(); // Reload to update UI state
                 } else {
-                    resultsDiv.innerHTML = `
-                        <div class="error">
-                            <strong>Error:</strong> ${error.message}
-                        </div>
-                    `;
-                    showMessage('Simulation failed: ' + error.message, 'error');
+                    setTimeout(() => {
+                        resultsDiv.innerHTML = `
+                            <div class="error">
+                                <strong>Error:</strong> ${error.message}
+                            </div>
+                        `;
+                        showMessage('Simulation failed: ' + error.message, 'error');
+                    }, 1000);
                 }
             } finally {
                 btn.disabled = false;

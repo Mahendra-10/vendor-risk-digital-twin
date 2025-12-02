@@ -149,17 +149,26 @@ def load_into_neo4j(data: Dict[str, Any], credentials: Dict[str, str]) -> None:
             for vendor in data.get('vendors', []):
                 vendor_id = vendor.get('vendor_id', vendor.get('name', '').lower().replace(' ', '_'))
                 vendor_name = vendor.get('name', '')
+                # Normalize vendor name to lowercase for case-insensitive matching
+                normalized_name = vendor_name.lower().strip()
                 
-                # Create vendor node
+                # Create vendor node - use normalized name for MERGE to prevent duplicates
+                # This matches the strategy used in scripts/neo4j/load_graph.py
                 session.run(
                     """
-                    MERGE (v:Vendor {vendor_id: $vendor_id})
-                    SET v.name = $name,
+                    MERGE (v:Vendor {name: $normalized_name})
+                    ON CREATE SET v.vendor_id = $vendor_id,
                         v.category = $category,
-                        v.criticality = $criticality
+                        v.criticality = $criticality,
+                        v.display_name = $display_name
+                    ON MATCH SET v.vendor_id = COALESCE(v.vendor_id, $vendor_id),
+                        v.category = COALESCE(v.category, $category),
+                        v.criticality = COALESCE(v.criticality, $criticality),
+                        v.display_name = COALESCE(v.display_name, $display_name)
                     """,
+                    normalized_name=normalized_name,
                     vendor_id=vendor_id,
-                    name=vendor_name,
+                    display_name=vendor_name,
                     category=vendor.get('category', 'unknown'),
                     criticality=vendor.get('criticality', 'medium')
                 )
@@ -182,13 +191,14 @@ def load_into_neo4j(data: Dict[str, Any], credentials: Dict[str, str]) -> None:
                     )
                     
                     # Create DEPENDS_ON relationship
+                    # Use normalized name to match vendor (consistent with MERGE strategy)
                     session.run(
                         """
-                        MATCH (v:Vendor {vendor_id: $vendor_id})
+                        MATCH (v:Vendor {name: $normalized_vendor_name})
                         MATCH (s:Service {service_id: $service_id})
                         MERGE (s)-[:DEPENDS_ON]->(v)
                         """,
-                        vendor_id=vendor_id,
+                        normalized_vendor_name=normalized_name,
                         service_id=service_id
                     )
         

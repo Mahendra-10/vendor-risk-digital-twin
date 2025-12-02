@@ -54,7 +54,7 @@ steps:
       - '.'
     waitFor: ['verify-source-code']
 
-  # Step 3.5: Verify what's in the Docker image
+  # Step 3.5: Verify what's in the Docker image and get image digest
   - name: 'gcr.io/cloud-builders/docker'
     id: 'verify-docker-image'
     entrypoint: 'bash'
@@ -68,6 +68,11 @@ steps:
         echo ""
         echo "Checking if scripts directory exists in image:"
         docker run --rm --entrypoint ls gcr.io/$PROJECT_ID/simulation-service:latest -la /app/scripts/ | head -10 || echo "❌ Could not list scripts directory"
+        echo ""
+        echo "Getting image digest for deployment:"
+        IMAGE_DIGEST=$(docker inspect gcr.io/$PROJECT_ID/simulation-service:latest --format='{{index .RepoDigests 0}}' | cut -d'@' -f2 || docker inspect gcr.io/$PROJECT_ID/simulation-service:latest --format='{{.Id}}')
+        echo "IMAGE_DIGEST=$IMAGE_DIGEST" > /workspace/image_digest.txt
+        echo "Image digest: $IMAGE_DIGEST"
     waitFor: ['build-simulation-service']
 
   # Step 4: Deploy Cloud Run Simulation Service

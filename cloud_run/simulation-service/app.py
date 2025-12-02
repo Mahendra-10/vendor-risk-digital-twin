@@ -32,7 +32,9 @@ if app_dir not in sys.path:
     sys.path.insert(0, app_dir)
 
 # Debug: Print to verify this is the latest code version
-print(f"✅ Build Version: 2025-12-02-v2 - sys.path={sys.path[:2]}")
+# This print confirms the latest code is running (2025-12-02-v3)
+print(f"✅ Build Version: 2025-12-02-v3 - sys.path={sys.path[:2]}")
+print(f"✅ Import path: scripts.simulation.simulate_failure")
 
 # Import simulation module (updated path: scripts/simulation/simulate_failure.py)
 # Fixed import path: scripts.simulation.simulate_failure (not scripts.simulate_failure)

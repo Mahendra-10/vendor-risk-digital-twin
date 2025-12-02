@@ -9,6 +9,8 @@ Endpoints:
     GET /simulate/{simulation_id} - Get simulation results (future)
     GET /health - Health check endpoint
     GET /vendors - List available vendors
+
+Build Version: 2025-12-02 - Fixed import paths and added __init__.py files
 """
 
 import os

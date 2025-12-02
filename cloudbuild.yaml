@@ -18,7 +18,27 @@ steps:
         fi
     waitFor: ['-']
 
-  # Step 2: Build and Push Cloud Run Simulation Service
+  # Step 2: Verify source code before building
+  - name: 'bash'
+    id: 'verify-source-code'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "🔍 Verifying source code..."
+        echo "Commit SHA: $COMMIT_SHA"
+        echo "Branch: $BRANCH_NAME"
+        echo ""
+        echo "Checking app.py import statement:"
+        grep -n "from scripts" cloud_run/simulation-service/app.py || echo "❌ No import found!"
+        echo ""
+        echo "Expected: from scripts.simulation.simulate_failure"
+        echo ""
+        echo "Checking if __init__.py files exist:"
+        ls -la scripts/__init__.py scripts/simulation/__init__.py scripts/gcp/__init__.py || echo "❌ Missing __init__.py files!"
+    waitFor: ['-']
+
+  # Step 3: Build and Push Cloud Run Simulation Service
   - name: 'gcr.io/cloud-builders/docker'
     id: 'build-simulation-service'
     args:
@@ -30,9 +50,9 @@ steps:
       - '-t'
       - 'gcr.io/$PROJECT_ID/simulation-service:latest'
       - '.'
-    waitFor: ['-']
+    waitFor: ['verify-source-code']
 
-  # Step 3: Deploy Cloud Run Simulation Service
+  # Step 4: Deploy Cloud Run Simulation Service
   - name: 'gcr.io/cloud-builders/gcloud'
     id: 'deploy-simulation-service'
     args:

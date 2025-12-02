@@ -102,7 +102,7 @@ steps:
       - 'GCP_PROJECT_ID=$PROJECT_ID'
       - '--set-secrets'
       - 'NEO4J_URI=neo4j-uri:latest,NEO4J_USER=neo4j-user:latest,NEO4J_PASSWORD=neo4j-password:latest'
-    waitFor: ['build-simulation-service']
+    waitFor: ['verify-docker-image']
 
   # Step 4: Deploy Discovery Cloud Function (optional - continue on error)
   - name: 'gcr.io/cloud-builders/gcloud'

@@ -23,6 +23,7 @@ steps:
     id: 'build-simulation-service'
     args:
       - 'build'
+      - '--no-cache'
       - '-f'
       - 'cloud_run/simulation-service/Dockerfile'
       - '-t'

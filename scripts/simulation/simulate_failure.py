@@ -7,7 +7,7 @@ Simulates vendor failure scenarios and predicts impact on:
 - Compliance (control failures, framework score changes)
 
 Usage:
-    python scripts/simulate_failure.py --vendor "Stripe" --duration 4
+    python scripts/simulation/simulate_failure.py --vendor "Stripe" --duration 4
 """
 
 import argparse
@@ -19,7 +19,7 @@ from datetime import datetime
 from neo4j import GraphDatabase
 
 # Add parent directory to path for imports
-sys.path.append(str(Path(__file__).parent.parent))
+sys.path.append(str(Path(__file__).parent.parent.parent))
 
 from scripts.utils import (
     setup_logging,
@@ -488,7 +488,7 @@ def main():
         # Optionally write to BigQuery
         if args.bigquery:
             try:
-                from scripts.bigquery_loader import load_simulation_results
+                from scripts.bigquery.bigquery_loader import load_simulation_results
                 from google.cloud import bigquery
                 import os
                 

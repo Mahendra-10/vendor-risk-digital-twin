@@ -50,23 +50,23 @@ export GCP_REGION=us-central1
 
 ### 2. Discovery Results Fetcher
 
-**File:** `scripts/fetch_discovery_results.py`
+**File:** `scripts/gcp/fetch_discovery_results.py`
 
 **Purpose:** Fetches the latest discovery results from Cloud Storage and converts them to Neo4j format.
 
 **Usage:**
 ```bash
 # Fetch and save to file
-python scripts/fetch_discovery_results.py --project-id PROJECT_ID
+python scripts/gcp/fetch_discovery_results.py --project-id PROJECT_ID
 
 # Fetch and automatically load into Neo4j
-python scripts/fetch_discovery_results.py --project-id PROJECT_ID --load-to-neo4j
+python scripts/gcp/fetch_discovery_results.py --project-id PROJECT_ID --load-to-neo4j
 
 # Specify custom bucket
-python scripts/fetch_discovery_results.py --project-id PROJECT_ID --bucket custom-bucket-name
+python scripts/gcp/fetch_discovery_results.py --project-id PROJECT_ID --bucket custom-bucket-name
 
 # Custom output file
-python scripts/fetch_discovery_results.py --project-id PROJECT_ID --output-file data/outputs/my_discovery.json
+python scripts/gcp/fetch_discovery_results.py --project-id PROJECT_ID --output-file data/outputs/my_discovery.json
 ```
 
 **What it does:**
@@ -201,7 +201,7 @@ gcloud functions call discover-vendors \
 ### Step 3: Fetch and Load into Neo4j
 ```bash
 # Option A: Fetch and load in one step
-python scripts/fetch_discovery_results.py \
+python scripts/gcp/fetch_discovery_results.py \
   --project-id your-project-id \
   --load-to-neo4j
 

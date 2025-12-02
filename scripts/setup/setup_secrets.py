@@ -10,9 +10,9 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 # Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from scripts.gcp_secrets import create_secret
+from scripts.gcp.gcp_secrets import create_secret
 from scripts.utils import setup_logging
 
 # Load environment variables
@@ -98,7 +98,7 @@ def main():
         logger.info("✅ Secret setup complete!")
         logger.info("\nNext steps:")
         logger.info("1. Update your code to use Secret Manager (already done in utils.py)")
-        logger.info("2. Test by running: python scripts/simulate_failure.py --vendor Stripe --duration 4")
+        logger.info("2. Test by running: python scripts/simulation/simulate_failure.py --vendor Stripe --duration 4")
         logger.info("3. Secrets will be fetched from Secret Manager automatically")
     else:
         logger.error("❌ Secret setup failed")

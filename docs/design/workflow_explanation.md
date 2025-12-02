@@ -76,7 +76,7 @@ This document explains how the four main dashboard actions connect together in t
 **How it works:**
 ```javascript
 // Dashboard calls: POST /api/discovery/load
-// Backend runs: python scripts/fetch_discovery_results.py --load-to-neo4j
+// Backend runs: python scripts/gcp/fetch_discovery_results.py --load-to-neo4j
 // Which calls: python scripts/load_graph.py --from-gcp
 ```
 
@@ -336,7 +336,7 @@ Fetch Discovery → Load into Neo4j → Run Simulation → View in Browser
 ### Files Involved:
 - **Dashboard Frontend:** `dashboard/templates/index.html`
 - **Dashboard Backend:** `dashboard/server.js`
-- **Discovery Fetcher:** `scripts/fetch_discovery_results.py`
+- **Discovery Fetcher:** `scripts/gcp/fetch_discovery_results.py`
 - **Graph Loader:** `scripts/load_graph.py`
 - **Simulation Engine:** `dashboard/simulator.js` (local) or `cloud_run/simulation-service/app.py` (Cloud Run)
 - **Neo4j Browser:** Hosted by Neo4j Aura (cloud service)

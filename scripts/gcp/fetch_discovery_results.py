@@ -5,7 +5,7 @@ Fetches the latest discovery results from Cloud Storage and converts them
 to the format expected by load_graph.py for Neo4j import.
 
 Usage:
-    python scripts/fetch_discovery_results.py --project-id PROJECT_ID [--output-file OUTPUT.json]
+    python scripts/gcp/fetch_discovery_results.py --project-id PROJECT_ID [--output-file OUTPUT.json]
 """
 
 import argparse
@@ -18,7 +18,7 @@ from typing import Dict, List, Any, Optional
 from datetime import datetime
 
 # Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from google.cloud import storage
 from scripts.utils import setup_logging, load_config
@@ -398,7 +398,7 @@ def main():
     if args.load_to_neo4j:
         logger.info("Loading data into Neo4j...")
         try:
-            from scripts.load_graph import Neo4jGraphLoader
+            from scripts.neo4j.load_graph import Neo4jGraphLoader
             from scripts.utils import load_config, validate_env_vars
             
             # Validate environment

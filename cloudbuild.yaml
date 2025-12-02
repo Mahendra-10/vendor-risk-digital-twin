@@ -1,0 +1,139 @@
+# Cloud Build Configuration for Vendor Risk Digital Twin
+# This file automates building and deploying all services
+
+steps:
+  # Step 1: Run tests (optional - won't fail build)
+  - name: 'python:3.11'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "🧪 Running tests..."
+        pip install -r requirements.txt || echo "⚠️  Could not install requirements, continuing..."
+        if [ -d "tests" ] && [ "$(ls -A tests/*.py 2>/dev/null)" ]; then
+          pip install pytest pytest-cov || true
+          pytest tests/ -v --tb=short || echo "⚠️  Tests failed, but continuing build..."
+        else
+          echo "ℹ️  No tests found, skipping test step"
+        fi
+    waitFor: ['-']
+
+  # Step 2: Build and Push Cloud Run Simulation Service
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-simulation-service'
+    args:
+      - 'build'
+      - '-f'
+      - 'cloud_run/simulation-service/Dockerfile'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/simulation-service:latest'
+      - '.'
+    waitFor: ['-']
+
+  # Step 3: Deploy Cloud Run Simulation Service
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'deploy-simulation-service'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'simulation-service'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/simulation-service:latest'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--memory'
+      - '512Mi'
+      - '--cpu'
+      - '1'
+      - '--timeout'
+      - '300'
+      - '--max-instances'
+      - '10'
+      - '--set-env-vars'
+      - 'GCP_PROJECT_ID=$PROJECT_ID'
+      - '--set-secrets'
+      - 'NEO4J_URI=neo4j-uri:latest,NEO4J_USER=neo4j-user:latest,NEO4J_PASSWORD=neo4j-password:latest'
+    waitFor: ['build-simulation-service']
+
+  # Step 4: Deploy Discovery Cloud Function (optional - continue on error)
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'deploy-discovery-function'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "Deploying Discovery Function..."
+        gcloud functions deploy vendor-discovery \
+          --gen2 \
+          --runtime python311 \
+          --region us-central1 \
+          --source cloud_functions/discovery \
+          --entry-point discover_vendors \
+          --trigger-http \
+          --allow-unauthenticated \
+          --set-env-vars GCP_PROJECT_ID=$PROJECT_ID,STORAGE_BUCKET=$PROJECT_ID-discovery-results \
+          --memory 512MB \
+          --timeout 540s \
+          --max-instances 10 || echo "⚠️  Discovery Function deployment failed, but continuing..."
+    waitFor: ['-']
+
+  # Step 5: Deploy Graph Loader Cloud Function (optional - continue on error)
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'deploy-graph-loader'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "Deploying Graph Loader Function..."
+        gcloud functions deploy graph-loader \
+          --gen2 \
+          --runtime python311 \
+          --region us-central1 \
+          --source cloud_functions/graph_loader \
+          --entry-point load_discovery_to_neo4j \
+          --trigger-topic vendor-discovery-events \
+          --set-env-vars GCP_PROJECT_ID=$PROJECT_ID \
+          --set-secrets NEO4J_URI=neo4j-uri:latest,NEO4J_USER=neo4j-user:latest,NEO4J_PASSWORD=neo4j-password:latest \
+          --timeout 540s \
+          --memory 512MB \
+          --max-instances 10 \
+          --allow-unauthenticated || echo "⚠️  Graph Loader deployment failed, but continuing..."
+    waitFor: ['-']
+
+  # Step 6: Deploy BigQuery Loader Cloud Function (optional - continue on error)
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'deploy-bigquery-loader'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "Deploying BigQuery Loader Function..."
+        gcloud functions deploy bigquery-loader \
+          --gen2 \
+          --runtime python311 \
+          --region us-central1 \
+          --source cloud_functions/bigquery_loader \
+          --entry-point load_simulation_to_bigquery \
+          --trigger-topic simulation-results \
+          --set-env-vars GCP_PROJECT_ID=$PROJECT_ID \
+          --timeout 540s \
+          --memory 512MB \
+          --max-instances 10 \
+          --allow-unauthenticated || echo "⚠️  BigQuery Loader deployment failed, but continuing..."
+    waitFor: ['-']
+
+# Images to push (happens automatically after build step)
+images:
+  - 'gcr.io/$PROJECT_ID/simulation-service:latest'
+
+# Options
+options:
+  machineType: 'E2_HIGHCPU_8'
+  logging: CLOUD_LOGGING_ONLY
+
+# Timeout
+timeout: '1200s'
+

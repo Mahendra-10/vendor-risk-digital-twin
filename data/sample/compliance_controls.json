@@ -29,6 +29,11 @@
       "soc2_controls": ["A1.2"],
       "nist_controls": ["PR.DS-2", "RC.RP-1"],
       "iso27001_controls": ["A.5.23"]
+    },
+    "Twilio": {
+      "soc2_controls": ["CC6.6"],
+      "nist_controls": ["ID.AM-3"],
+      "iso27001_controls": ["A.5.14"]
     }
   },
   "impact_weights": {

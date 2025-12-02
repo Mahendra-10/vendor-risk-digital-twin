@@ -5,7 +5,7 @@ Merges duplicate service nodes that have the same GCP resource path but differen
 This script should be run once to clean up existing duplicates.
 
 Usage:
-    python scripts/cleanup_duplicate_services.py
+    python scripts/cleanup/cleanup_duplicate_services.py
 """
 
 import logging
@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 
 # Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from neo4j import GraphDatabase
 from scripts.utils import setup_logging, load_config, validate_env_vars

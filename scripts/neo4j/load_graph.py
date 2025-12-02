@@ -8,7 +8,7 @@ Graph Model:
 - Relationships: DEPENDS_ON, SUPPORTS, SATISFIES
 
 Usage:
-    python scripts/load_graph.py --data-file data/sample/sample_dependencies.json
+    python scripts/neo4j/load_graph.py --data-file data/sample/sample_dependencies.json
 """
 
 import argparse
@@ -20,7 +20,7 @@ from typing import Dict, List, Any
 from neo4j import GraphDatabase
 
 # Add parent directory to path for imports
-sys.path.append(str(Path(__file__).parent.parent))
+sys.path.append(str(Path(__file__).parent.parent.parent))
 
 from scripts.utils import (
     setup_logging,
@@ -325,7 +325,7 @@ def main():
         
         logger.info("Fetching discovery results from GCP Cloud Storage...")
         try:
-            from scripts.fetch_discovery_results import get_latest_discovery, convert_to_neo4j_format
+            from scripts.gcp.fetch_discovery_results import get_latest_discovery, convert_to_neo4j_format
             
             discovery_results = get_latest_discovery(args.project_id)
             if not discovery_results:

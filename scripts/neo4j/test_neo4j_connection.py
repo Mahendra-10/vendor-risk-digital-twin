@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 from neo4j import GraphDatabase
 
-sys.path.append(str(Path(__file__).parent.parent))
+sys.path.append(str(Path(__file__).parent.parent.parent))
 
 from scripts.utils import load_config
 
@@ -45,7 +45,7 @@ def test_connection():
             
             if node_count == 0:
                 print("\n⚠️  Warning: Database is empty. Load data with:")
-                print("   python scripts/load_graph.py --data-file data/sample/sample_dependencies.json")
+                print("   python scripts/neo4j/load_graph.py --data-file data/sample/sample_dependencies.json")
         
         driver.close()
         return True

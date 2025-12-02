@@ -9,7 +9,7 @@ from google.cloud import functions_v1, run_v2
 from google.auth import default
 import os
 
-sys.path.append(str(Path(__file__).parent.parent))
+sys.path.append(str(Path(__file__).parent.parent.parent))
 
 from scripts.utils import load_config, setup_logging
 

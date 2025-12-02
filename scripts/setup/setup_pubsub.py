@@ -7,7 +7,7 @@ Creates the necessary Pub/Sub infrastructure for event-driven workflows:
 - simulation-results: Simulation completion events
 
 Usage:
-    python scripts/setup_pubsub.py --project-id vendor-risk-digital-twin
+    python scripts/setup/setup_pubsub.py --project-id vendor-risk-digital-twin
 """
 
 import argparse
@@ -18,7 +18,7 @@ from google.cloud import pubsub_v1
 from google.api_core import exceptions
 
 # Add parent directory to path for imports
-sys.path.append(str(Path(__file__).parent.parent))
+sys.path.append(str(Path(__file__).parent.parent.parent))
 
 from scripts.utils import setup_logging
 

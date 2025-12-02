@@ -7,7 +7,7 @@ Creates the necessary BigQuery dataset and tables for storing:
 - Historical analytics
 
 Usage:
-    python scripts/setup_bigquery.py --project-id vendor-risk-digital-twin
+    python scripts/bigquery/setup_bigquery.py --project-id vendor-risk-digital-twin
 """
 
 import argparse
@@ -18,7 +18,7 @@ from google.cloud import bigquery
 from google.cloud.exceptions import NotFound
 
 # Add parent directory to path for imports
-sys.path.append(str(Path(__file__).parent.parent))
+sys.path.append(str(Path(__file__).parent.parent.parent))
 
 from scripts.utils import setup_logging
 

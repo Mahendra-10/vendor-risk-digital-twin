@@ -5,7 +5,7 @@ Merges duplicate vendor nodes that differ only by case (e.g., "Stripe" and "stri
 This script should be run once to clean up existing duplicates before reloading data.
 
 Usage:
-    python scripts/cleanup_duplicates.py
+    python scripts/cleanup/cleanup_duplicates.py
 """
 
 import logging
@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 
 # Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from neo4j import GraphDatabase
 from scripts.utils import setup_logging, load_config, validate_env_vars

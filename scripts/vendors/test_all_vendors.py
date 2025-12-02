@@ -5,7 +5,7 @@ Tests that all vendors in Neo4j can be properly simulated without issues.
 This ensures vendor name normalization works correctly for all vendors.
 
 Usage:
-    python scripts/test_all_vendors.py
+    python scripts/vendors/test_all_vendors.py
 """
 
 import logging
@@ -13,11 +13,11 @@ import sys
 from pathlib import Path
 
 # Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from neo4j import GraphDatabase
 from scripts.utils import setup_logging, load_config, validate_env_vars
-from scripts.simulate_failure import VendorFailureSimulator
+from scripts.simulation.simulate_failure import VendorFailureSimulator
 
 logger = logging.getLogger(__name__)
 

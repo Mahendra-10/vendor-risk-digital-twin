@@ -7,14 +7,20 @@ Discovers vendor dependencies across GCP infrastructure by:
 3. Mapping services to business processes
 
 Usage:
-    python scripts/gcp_discovery.py --project-id YOUR_PROJECT_ID
+    python scripts/gcp/gcp_discovery.py --project-id YOUR_PROJECT_ID
 """
 
 import argparse
 import logging
+import sys
+from pathlib import Path
 from typing import Dict, List, Any
 from google.cloud import functions_v1, run_v2
 from google.auth import default
+
+# Add parent directory to path for imports
+sys.path.append(str(Path(__file__).parent.parent.parent))
+
 from scripts.utils import (
     setup_logging, 
     load_config, 

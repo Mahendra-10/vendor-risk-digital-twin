@@ -15,7 +15,7 @@ load_dotenv()
 
 # Try to import GCP Secret Manager (optional, for cloud deployment)
 try:
-    from scripts.gcp_secrets import get_neo4j_credentials
+    from scripts.gcp.gcp_secrets import get_neo4j_credentials
     GCP_SECRETS_AVAILABLE = True
 except ImportError:
     GCP_SECRETS_AVAILABLE = False

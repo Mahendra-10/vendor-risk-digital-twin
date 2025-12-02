@@ -545,7 +545,7 @@ app.get('/api/discovery/latest', async (req, res) => {
     const execPromise = promisify(exec);
 
     // Run the Python script to fetch discovery results (using venv Python)
-    const scriptPath = path.join(__dirname, '..', 'scripts', 'fetch_discovery_results.py');
+    const scriptPath = path.join(__dirname, '..', 'scripts', 'gcp', 'fetch_discovery_results.py');
     const venvPython = path.join(__dirname, '..', 'venv', 'bin', 'python');
     
     // Build command with verbose logging if dev mode
@@ -657,7 +657,7 @@ app.post('/api/discovery/load', async (req, res) => {
     const execPromise = promisify(exec);
 
     // Run the Python script to fetch and load discovery results (using venv Python)
-    const scriptPath = path.join(__dirname, '..', 'scripts', 'fetch_discovery_results.py');
+    const scriptPath = path.join(__dirname, '..', 'scripts', 'gcp', 'fetch_discovery_results.py');
     const venvPython = path.join(__dirname, '..', 'venv', 'bin', 'python');
     const { stdout, stderr } = await execPromise(
       `"${venvPython}" "${scriptPath}" --project-id "${project_id}" --load-to-neo4j`

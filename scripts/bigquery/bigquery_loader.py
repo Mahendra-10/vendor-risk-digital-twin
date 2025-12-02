@@ -5,10 +5,10 @@ Loads simulation results and vendor dependencies into BigQuery for analytics.
 
 Usage:
     # Load simulation results
-    python scripts/bigquery_loader.py --type simulation --data-file data/outputs/simulation_result.json
+    python scripts/bigquery/bigquery_loader.py --type simulation --data-file data/outputs/simulation_result.json
     
     # Load discovery results
-    python scripts/bigquery_loader.py --type dependencies --data-file data/outputs/discovered_dependencies.json
+    python scripts/bigquery/bigquery_loader.py --type dependencies --data-file data/outputs/discovered_dependencies.json
 """
 
 import argparse
@@ -22,7 +22,7 @@ from google.cloud import bigquery
 from google.cloud.exceptions import NotFound
 
 # Add parent directory to path for imports
-sys.path.append(str(Path(__file__).parent.parent))
+sys.path.append(str(Path(__file__).parent.parent.parent))
 
 from scripts.utils import (
     setup_logging,

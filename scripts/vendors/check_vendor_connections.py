@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 import os
 
 # Add parent directory to path
-sys.path.append(str(Path(__file__).parent.parent))
+sys.path.append(str(Path(__file__).parent.parent.parent))
 
 from scripts.utils import load_config, setup_logging
 

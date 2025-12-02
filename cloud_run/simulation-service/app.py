@@ -26,6 +26,7 @@ from google.cloud import pubsub_v1
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 # Import simulation module (updated path: scripts/simulation/simulate_failure.py)
+# Fixed import path: scripts.simulation.simulate_failure (not scripts.simulate_failure)
 from scripts.simulation.simulate_failure import VendorFailureSimulator
 from scripts.utils import (
     setup_logging,

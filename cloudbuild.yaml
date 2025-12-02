@@ -70,9 +70,9 @@ steps:
         docker run --rm --entrypoint ls gcr.io/$PROJECT_ID/simulation-service:latest -la /app/scripts/ | head -10 || echo "❌ Could not list scripts directory"
         echo ""
         echo "Getting image digest for deployment:"
-        IMAGE_DIGEST=$(docker inspect gcr.io/$PROJECT_ID/simulation-service:latest --format='{{index .RepoDigests 0}}' | cut -d'@' -f2 || docker inspect gcr.io/$PROJECT_ID/simulation-service:latest --format='{{.Id}}')
-        echo "IMAGE_DIGEST=$IMAGE_DIGEST" > /workspace/image_digest.txt
-        echo "Image digest: $IMAGE_DIGEST"
+        IMAGE_DIGEST=$(docker inspect gcr.io/$$PROJECT_ID/simulation-service:latest --format='{{index .RepoDigests 0}}' | cut -d'@' -f2 || docker inspect gcr.io/$$PROJECT_ID/simulation-service:latest --format='{{.Id}}')
+        echo "$$IMAGE_DIGEST" > /workspace/image_digest.txt
+        echo "Image digest: $$IMAGE_DIGEST"
     waitFor: ['build-simulation-service']
 
   # Step 4: Deploy Cloud Run Simulation Service using image digest
@@ -82,11 +82,11 @@ steps:
     args:
       - '-c'
       - |
-        IMAGE_DIGEST=$(cat /workspace/image_digest.txt | cut -d'=' -f2)
-        echo "🚀 Deploying with image digest: $IMAGE_DIGEST"
-        echo "Full image: gcr.io/$PROJECT_ID/simulation-service@$IMAGE_DIGEST"
+        IMAGE_DIGEST=$(cat /workspace/image_digest.txt)
+        echo "🚀 Deploying with image digest: $$IMAGE_DIGEST"
+        echo "Full image: gcr.io/$$PROJECT_ID/simulation-service@$$IMAGE_DIGEST"
         gcloud run deploy simulation-service \
-          --image gcr.io/$PROJECT_ID/simulation-service@$IMAGE_DIGEST \
+          --image gcr.io/$$PROJECT_ID/simulation-service@$$IMAGE_DIGEST \
           --region us-central1 \
           --platform managed \
           --allow-unauthenticated \

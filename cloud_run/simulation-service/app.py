@@ -10,7 +10,7 @@ Endpoints:
     GET /health - Health check endpoint
     GET /vendors - List available vendors
 
-Build Version: 2025-12-02 - Fixed import paths and added __init__.py files
+Build Version: 2025-12-02-v2 - Fixed sys.path calculation (parent.parent.parent -> parent)
 """
 
 import os

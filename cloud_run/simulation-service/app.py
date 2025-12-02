@@ -31,6 +31,9 @@ app_dir = str(Path(__file__).parent)  # /app
 if app_dir not in sys.path:
     sys.path.insert(0, app_dir)
 
+# Debug: Print to verify this is the latest code version
+print(f"✅ Build Version: 2025-12-02-v2 - sys.path={sys.path[:2]}")
+
 # Import simulation module (updated path: scripts/simulation/simulate_failure.py)
 # Fixed import path: scripts.simulation.simulate_failure (not scripts.simulate_failure)
 from scripts.simulation.simulate_failure import VendorFailureSimulator

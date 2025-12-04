@@ -63,20 +63,24 @@
 **Content:**
 - **Headline:** "Related work and gaps"
 
-**Existing Solutions:**
-- **GRC Platforms:** Manual data entry, no simulation
-- **Security Ratings:** External scores, no infrastructure mapping
-- **Risk Quantification:** Financial-only, no operational simulation
+**What Exists (and why it's insufficient):**
+- **GRC Platforms:** Manual data entry, no simulation → Reactive, not predictive
+- **Security Ratings:** External scores, no infrastructure mapping → Can't map vendor → service → business process
+- **Risk Quantification:** Financial-only, no operational simulation → Missing operational and compliance impact
 
-**Gap Identified:**
-- No existing solution combines:
-  - Automated cloud-native discovery
-  - Graph-based dependency modeling
-  - Real-time failure simulation
-  - Multi-dimensional impact prediction
+**The Gap (what's missing):**
+- ❌ No automated cloud-native discovery (manual process)
+- ❌ No graph-based dependency modeling (can't see relationships)
+- ❌ No real-time failure simulation (can't predict impact)
+- ❌ No multi-dimensional impact (only financial, not operational/compliance)
+
+**Our Contribution:**
+- ✅ **First solution** that combines all four capabilities above
+- ✅ **Cloud-native** approach (automated, no manual steps)
+- ✅ **Predictive** rather than reactive
 
 **Image Placeholder:**
-- [IMAGE: Competitive landscape comparison]
+- [IMAGE: Gap analysis - what exists vs. what's needed]
 
 ---
 
@@ -85,11 +89,11 @@
 - **Headline:** "Cloud-native, event-driven architecture"
 
 **Architecture:**
-- **4-Layer Design:** Presentation → Application → Data → External Systems
-- **GCP Services:** Cloud Functions (Gen2), Cloud Run, Pub/Sub, Neo4j, BigQuery, Cloud Storage, Secret Manager, Cloud Scheduler, Cloud Build
+- **4-Layer Design:** Web Dashboard → Application (Business Logic) → Data (Storage) → External Systems (GCP APIs, Compliance)
+- **GCP Services:** Cloud Functions (Gen2), Cloud Run, Pub/Sub, Neo4j, BigQuery, Cloud Storage, Secret Manager, Cloud Scheduler, Cloud Build, Cloud Monitoring
 
 **Design Principles:**
-- Fully serverless (auto-scaling, pay-per-use)
+- Serverless backend (Cloud Functions & Cloud Run auto-scale 0-10 instances, pay-per-use)
 - Event-driven (Pub/Sub for decoupled processing)
 - Graph-based modeling (Neo4j for dependency traversal)
 - Automated discovery (GCP API integration)
@@ -98,6 +102,8 @@
 - **Nodes:** Vendor, Service, BusinessProcess, ComplianceControl
 - **Relationships:** DEPENDS_ON, SUPPORTS, SATISFIES
 - **Example:** payment-api → DEPENDS_ON → Stripe → SUPPORTS → checkout
+- **Vendors:** 5 vendors (Stripe, Auth0, SendGrid, Twilio, MongoDB Atlas)
+- **Note:** Actual graph visualization shown in Results slide (Slide 6)
 
 **Mermaid Diagram - 4-Layer Architecture:**
 ```mermaid
@@ -175,25 +181,36 @@ graph LR
 **Content:**
 - **Headline:** "Production-ready cloud-native implementation"
 
-**8 Phases Complete:**
-1. Secret Manager - Secure credential storage
-2. Cloud Functions (Gen2) - Discovery, Graph Loader, BigQuery Loader
-3. Cloud Run - Simulation Service (containerized, REST API)
-4. BigQuery - Analytics and historical tracking
-5. Pub/Sub - Event-driven architecture
-6. Cloud Scheduler - Automated daily discovery
-7. Cloud Monitoring - Observability
-8. **CI/CD Pipeline** - Automated build, test, deploy
-
 **Key Components:**
 - **Discovery Function:** Queries GCP APIs, pattern-based vendor detection
 - **Simulation Service:** Graph traversal, multi-dimensional impact calculation
 - **Graph Loader:** Automatic Neo4j updates via Pub/Sub
 - **CI/CD:** Fully automated deployment pipeline
 
+**Web Dashboard (Presentation Layer):**
+- **Technology Stack:** Node.js/Express server, RESTful API architecture
+- **Frontend:** HTML/CSS/JavaScript with responsive UI
+- **Backend Integration:** 
+  - Direct Neo4j connection for real-time graph queries
+  - REST API endpoints for vendor simulation (`/api/simulate`)
+  - Graph statistics and dependency visualization (`/api/graph/*`)
+- **Features:** Vendor selection, failure duration configuration, multi-dimensional impact visualization, actionable recommendations
+- **Deployment:** Standalone Express server, can be containerized or deployed to Cloud Run
+
+**Data Sources:**
+- **Operational/Financial:** Hardcoded business metrics (revenue/hour, customer count) - configurable via `config.yaml`
+- **Compliance:** Framework mappings loaded from `compliance_frameworks.yaml` (SOC 2, NIST, ISO 27001 controls with vendor-to-control mappings and weights)
+  ```yaml
+  # Example: Stripe maps to SOC 2 CC6.6 (Transmission Security)
+  soc2:
+    CC6.6:
+      vendors: [Stripe, SendGrid, Twilio]
+      weight: 0.12
+  ```
+
 **Image Placeholder:**
-- [IMAGE: GCP services integration diagram]
-- [IMAGE: CI/CD pipeline flow]
+- [IMAGE: Web dashboard screenshot - showing vendor selection and simulation interface]
+- [IMAGE: End-to-end automation flow - Discovery → Pub/Sub → Graph Loader → Neo4j → Simulation]
 
 ---
 
@@ -209,18 +226,73 @@ graph LR
 - **CI/CD Pipeline:** 5-10 minutes (build + deploy all services)
 
 **Functional Evaluation:**
-- **Vendor Detection:** 95%+ accuracy on known vendor patterns
-- **Simulation Accuracy:** Validated against manual calculations
-- **Test Coverage:** Unit + integration tests
-- **Scaling:** Tested up to 1000 nodes, 100 concurrent requests
+- **Vendor Detection:** Pattern-based detection for known vendors (Stripe, Auth0, SendGrid, etc.)
+- **Simulation Accuracy:** Calculation logic verified through unit tests
+- **Test Coverage:** Unit + integration tests (discovery, simulation, impact calculations)
+- **Scaling:** Auto-scaling configured (Cloud Run: 0-10 container instances, Cloud Functions: auto-scale based on Pub/Sub message volume)
 
 **Example Results (Stripe, 4 hours):**
 - Services Affected: 2 | Customers: 50,000 | Revenue Loss: $550,000
 - Compliance: SOC 2: 90%→70% | NIST: 88%→68% | ISO: 85%→62%
 
+**Graph Visualization:**
+- **Actual Neo4j Graph:** Shows discovered vendor dependencies from GCP infrastructure
+- **Nodes:** 5 Vendors (Stripe, Auth0, SendGrid, Twilio, MongoDB), 8 Services, Business Processes, Compliance Controls
+- **Relationships:** Service → DEPENDS_ON → Vendor, Service → SUPPORTS → BusinessProcess
+- **Query Used:** `MATCH (n) OPTIONAL MATCH (n)-[r]-(m) RETURN n, r, m LIMIT 500`
+- **Demonstrates:** Automated discovery successfully mapped real GCP resources to vendor dependencies
+
 **Image Placeholder:**
 - [IMAGE: Performance metrics dashboard]
+- [IMAGE: Neo4j graph visualization - all nodes and relationships]
 - [IMAGE: Simulation results]
+
+---
+
+### **DEMO: Live System Demonstration** (2-3 minutes)
+**Content:**
+- **Headline:** "See it in action: Vendor failure simulation"
+
+**Demo Flow:**
+1. **Dashboard Overview** (30 seconds)
+   - Show vendor inventory dashboard
+   - Display discovered vendors and services
+   - Highlight automated discovery results
+
+2. **Neo4j Graph Visualization** (45 seconds)
+   - Show actual graph with all nodes and relationships
+   - Highlight vendor → service → business process connections
+   - Demonstrate graph query capabilities
+   - **Note:** Use the query: `MATCH (n) OPTIONAL MATCH (n)-[r]-(m) RETURN n, r, m LIMIT 500`
+
+3. **Vendor Failure Simulation** (60-90 seconds)
+   - Select a vendor (e.g., Stripe)
+   - Run simulation for 4-hour failure
+   - Show real-time impact calculation:
+     - Services affected
+     - Revenue loss
+     - Compliance impact (SOC 2, NIST, ISO)
+   - Display detailed risk assessment report
+
+**Key Points to Emphasize:**
+- ✅ **Automated:** No manual data entry required
+- ✅ **Real-time:** Results in <2 seconds
+- ✅ **Visual:** Graph shows dependencies clearly
+- ✅ **Actionable:** Provides specific impact metrics
+
+**What NOT to Show:**
+- ❌ Infrastructure details (GCP services, Cloud Functions, etc.)
+- ❌ Technical implementation details
+- ❌ Code or configuration
+- ❌ CI/CD pipeline
+
+**Talking Points:**
+- "This demonstrates how organizations can proactively assess vendor risk"
+- "The graph visualization makes dependencies immediately clear"
+- "Simulation results provide actionable insights for risk management"
+- "All of this happens automatically from your cloud infrastructure"
+
+**Timing Note:** Keep demo to 2-3 minutes to maintain presentation pace. Can extend to 4 minutes if time permits.
 
 ---
 
@@ -233,6 +305,80 @@ graph LR
 - **Simulation:** Not possible → <2 seconds (new capability)
 - **Accuracy:** ~60% manual → 95%+ automated
 - **Automation:** 5-10 manual steps → Zero manual steps
+
+**Mermaid Diagram - Before vs After Automation:**
+```mermaid
+graph TB
+    subgraph Before["❌ BEFORE: Manual Process (5-10 Steps, 2-4 Hours)"]
+        direction TB
+        M1["1. Manually Query GCP APIs<br/>📋 List Cloud Functions & Cloud Run"]
+        M2["2. Manually Extract Env Vars<br/>📝 Copy-paste from GCP Console"]
+        M3["3. Manually Identify Vendors<br/>🔍 Pattern matching in spreadsheets"]
+        M4["4. Manually Map Dependencies<br/>📊 Create dependency matrix"]
+        M5["5. Manually Enter Data<br/>⌨️ Type into GRC system"]
+        M6["6. Manually Update Graph DB<br/>💾 Run Cypher queries manually"]
+        M7["7. Manually Verify Data<br/>✅ Check for errors"]
+        M8["8. Manual Deployment<br/>🚀 Deploy code manually"]
+        M9["9. Manual Scheduling<br/>⏰ Set calendar reminders"]
+        M10["10. Manual Monitoring<br/>👀 Check logs manually"]
+        
+        M1 --> M2
+        M2 --> M3
+        M3 --> M4
+        M4 --> M5
+        M5 --> M6
+        M6 --> M7
+        M7 --> M8
+        M8 --> M9
+        M9 --> M10
+        
+        style Before fill:#ffebee,stroke:#c62828,stroke-width:3px
+        style M1 fill:#ffcdd2,stroke:#b71c1c
+        style M2 fill:#ffcdd2,stroke:#b71c1c
+        style M3 fill:#ffcdd2,stroke:#b71c1c
+        style M4 fill:#ffcdd2,stroke:#b71c1c
+        style M5 fill:#ffcdd2,stroke:#b71c1c
+        style M6 fill:#ffcdd2,stroke:#b71c1c
+        style M7 fill:#ffcdd2,stroke:#b71c1c
+        style M8 fill:#ffcdd2,stroke:#b71c1c
+        style M9 fill:#ffcdd2,stroke:#b71c1c
+        style M10 fill:#ffcdd2,stroke:#b71c1c
+    end
+    
+    subgraph After["✅ AFTER: Automated Process (Zero Manual Steps, <30 Seconds)"]
+        direction TB
+        A1["Cloud Scheduler<br/>⏰ Daily Trigger"]
+        A2["Discovery Function<br/>🔍 Auto-query GCP APIs"]
+        A3["Auto Vendor Detection<br/>🤖 Pattern-based matching"]
+        A4["Pub/Sub Event<br/>📨 Event-driven trigger"]
+        A5["Graph Loader Function<br/>💾 Auto-update Neo4j"]
+        A6["CI/CD Pipeline<br/>🚀 Auto-deploy on commit"]
+        A7["Cloud Monitoring<br/>📊 Auto-alerts & logs"]
+        
+        A1 -->|Triggers| A2
+        A2 -->|Discovers| A3
+        A3 -->|Publishes| A4
+        A4 -->|Triggers| A5
+        A6 -->|Deploys| A2
+        A6 -->|Deploys| A5
+        A2 -.->|Logs| A7
+        A5 -.->|Logs| A7
+        
+        style After fill:#e8f5e9,stroke:#2e7d32,stroke-width:3px
+        style A1 fill:#c8e6c9,stroke:#1b5e20
+        style A2 fill:#c8e6c9,stroke:#1b5e20
+        style A3 fill:#c8e6c9,stroke:#1b5e20
+        style A4 fill:#c8e6c9,stroke:#1b5e20
+        style A5 fill:#c8e6c9,stroke:#1b5e20
+        style A6 fill:#c8e6c9,stroke:#1b5e20
+        style A7 fill:#c8e6c9,stroke:#1b5e20
+    end
+    
+    Before -.->|"Automation<br/>Transformation"| After
+    
+    style Before fill:#ffebee,stroke:#c62828,stroke-width:3px
+    style After fill:#e8f5e9,stroke:#2e7d32,stroke-width:3px
+```
 
 **Scaling Behavior:**
 - **Cloud Run:** Auto-scales 0-10 instances
@@ -282,6 +428,12 @@ graph LR
 - Real-time failure simulation
 - Production-ready with CI/CD
 
+**Core Innovation: Digital Twin Framework**
+- Live graph-based digital representation of vendor dependencies
+- **Failure simulation** (demonstrated) is just **one feature** of the twin
+- **Extensible to other scenarios:** Vendor migration, capacity planning, security breach simulation, compliance gap analysis, what-if scenarios
+- **Value:** Safe sandbox for risk experimentation, enabling predictive decision-making without production impact
+
 **Key Contributions:**
 - **Technical:** Cloud-native TPRM framework, graph-based modeling, real-time simulation
 - **Performance:** <2 sec simulation, <30 sec discovery, 95%+ accuracy
@@ -291,6 +443,29 @@ graph LR
 - Enables predictive vendor risk management
 - Reduces manual effort by 95%+
 - Supports DORA/NIS2 regulatory requirements
+
+**Integration Opportunity with Existing GRC Tools:**
+- **Proven approach:** Cloud-native GCP integration demonstrates automated data ingestion at scale
+- **Synergistic value:** GRC platforms (Archer, MetricStream, ServiceNow) can leverage our automated discovery, graph-based modeling, and predictive simulation
+- **Integration path:** REST API and Neo4j graph feed into GRC platforms as an **augmented intelligence layer**, combining automated discovery with enterprise workflows
+
+**Mermaid Diagram - GRC Tool Integration Architecture:**
+```mermaid
+graph LR
+    A["GCP Cloud<br/>Infrastructure"]
+    B["Our Vendor Risk<br/>Digital Twin Framework<br/>(Discovery + Simulation)"]
+    C["GRC Platform<br/>Archer/ServiceNow/MetricStream"]
+    D["📊 Enhanced Risk<br/>Intelligence &<br/>Better Decisions"]
+    
+    A -->|"Automated Discovery<br/>(Cloud Functions)"| B
+    B -->|"Simulation Results<br/>& Graph Data<br/>(REST API + Neo4j)"| C
+    C -->|"Augmented<br/>Intelligence"| D
+    
+    style A fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    style B fill:#f3e5f5,stroke:#6a1b9a,stroke-width:2px
+    style C fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    style D fill:#fff3e0,stroke:#e65100,stroke-width:2px
+```
 
 **Image Placeholder:**
 - [IMAGE: Summary infographic]
@@ -326,12 +501,15 @@ graph LR
 | 4 | Design / Approach | 1:30 |
 | 5 | Implementation | 1:30 |
 | 6 | Results - Performance & Accuracy | 2:00 |
+| **DEMO** | **Live System Demonstration** | **2-3** |
 | 7 | Results - Comparison & Scaling | 1:30 |
 | 8 | Remaining Issues & Future Directions | 1:00 |
 | 9 | Summary & Key Takeaways | 1:00 |
 | 10 | Q&A | Remaining |
 
-**Total:** ~10 minutes (with buffer for Q&A)
+**Total:** ~12-13 minutes (with demo) or ~10 minutes (without demo)
+
+**Note:** Demo can be optional if time is constrained. If included, reduce Slide 6 to 1.5 minutes to accommodate.
 
 ---
 

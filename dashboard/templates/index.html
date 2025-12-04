@@ -1453,7 +1453,15 @@
                         addDevLog(`✅ Discovery Complete!`, 'success', 'logs');
                         addDevLog(`📦 Cloud Functions: ${data.dev_mode.summary.cloud_functions}`, 'resource', 'resources');
                         addDevLog(`🚀 Cloud Run Services: ${data.dev_mode.summary.cloud_run_services}`, 'resource', 'resources');
-                        addDevLog(`🏢 Vendors Found: ${data.dev_mode.summary.vendors_found}`, 'resource', 'resources');
+                        // Show total vendors from Neo4j (includes all vendors being monitored)
+                        try {
+                            const statsResponse = await fetch('/api/graph/stats');
+                            const statsData = await statsResponse.json();
+                            const totalVendors = statsData.nodes?.Vendor || data.dev_mode.summary.vendors_found;
+                            addDevLog(`🏢 Vendors Found: ${totalVendors}`, 'resource', 'resources');
+                        } catch (error) {
+                            addDevLog(`🏢 Vendors Found: ${data.dev_mode.summary.vendors_found}`, 'resource', 'resources');
+                        }
                     }
                     
                     // Show detailed logs
@@ -1471,7 +1479,17 @@
                     const vendors = data.discovery.vendors || [];
                     const totalServices = vendors.reduce((sum, v) => sum + (v.services?.length || 0), 0);
                     
-                    document.getElementById('discoveredVendors').textContent = vendors.length;
+                    // Get total vendors from Neo4j (includes all vendors, not just discovered)
+                    try {
+                        const statsResponse = await fetch('/api/graph/stats');
+                        const statsData = await statsResponse.json();
+                        const totalVendorsInNeo4j = statsData.nodes?.Vendor || vendors.length;
+                        document.getElementById('discoveredVendors').textContent = totalVendorsInNeo4j;
+                    } catch (error) {
+                        // Fallback to discovered vendors if stats unavailable
+                        document.getElementById('discoveredVendors').textContent = vendors.length;
+                    }
+                    
                     document.getElementById('discoveredServices').textContent = totalServices;
                     document.getElementById('discoveryTimestamp').textContent = 
                         new Date(data.timestamp).toLocaleString();

@@ -18,7 +18,7 @@
               {
                 "timeSeriesQuery": {
                   "timeSeriesFilter": {
-                    "filter": "resource.type=\"cloud_function\" AND resource.labels.function_name=\"vendor-discovery\"",
+                    "filter": "resource.type=\"cloud_run_revision\" AND resource.labels.service_name=\"vendor-discovery\" AND metric.type=\"run.googleapis.com/request_count\"",
                     "aggregation": {
                       "alignmentPeriod": "60s",
                       "perSeriesAligner": "ALIGN_DELTA"
@@ -49,7 +49,7 @@
               {
                 "timeSeriesQuery": {
                   "timeSeriesFilter": {
-                    "filter": "resource.type=\"cloud_function\" AND resource.labels.function_name=\"vendor-discovery\" AND metric.type=\"cloudfunctions.googleapis.com/function/execution_times\"",
+                    "filter": "resource.type=\"cloud_run_revision\" AND resource.labels.service_name=\"vendor-discovery\" AND metric.type=\"run.googleapis.com/request_latencies\"",
                     "aggregation": {
                       "alignmentPeriod": "60s",
                       "perSeriesAligner": "ALIGN_MEAN"
@@ -140,7 +140,7 @@
               {
                 "timeSeriesQuery": {
                   "timeSeriesFilter": {
-                    "filter": "resource.type=\"cloud_function\" AND resource.labels.function_name=\"graph-loader\"",
+                    "filter": "resource.type=\"cloud_run_revision\" AND resource.labels.service_name=\"graph-loader\" AND metric.type=\"run.googleapis.com/request_count\"",
                     "aggregation": {
                       "alignmentPeriod": "60s",
                       "perSeriesAligner": "ALIGN_DELTA"
@@ -200,12 +200,12 @@
               {
                 "timeSeriesQuery": {
                   "timeSeriesFilter": {
-                    "filter": "resource.type=\"cloud_function\" AND metric.type=\"cloudfunctions.googleapis.com/function/execution_count\" AND metric.labels.result=\"error\"",
+                    "filter": "(resource.type=\"cloud_run_revision\" AND metric.type=\"run.googleapis.com/request_count\" AND httpRequest.status>=500) OR (resource.type=\"cloud_function\" AND metric.type=\"cloudfunctions.googleapis.com/function/execution_count\" AND metric.labels.result=\"error\")",
                     "aggregation": {
                       "alignmentPeriod": "60s",
                       "perSeriesAligner": "ALIGN_DELTA",
                       "crossSeriesReducer": "REDUCE_SUM",
-                      "groupByFields": ["resource.labels.function_name"]
+                      "groupByFields": ["resource.labels.function_name", "resource.labels.service_name"]
                     }
                   }
                 },

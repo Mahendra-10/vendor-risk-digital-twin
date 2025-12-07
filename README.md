@@ -57,12 +57,16 @@ See [docs/reports/final_report.md](docs/reports/final_report.md) for complete ar
 ## 🚀 Quick Start
 
 ### Prerequisites
+
+**Required:**
 - Python 3.9+
 - **Neo4j Database** (choose one):
-  - **Neo4j Aura** (recommended for cloud-native) - [Free trial available](https://neo4j.com/cloud/aura/) - Managed cloud database, perfect for production deployments
-  - **Neo4j Desktop** - [Download here](https://neo4j.com/download/) - Local development option
+  - **Neo4j Desktop** - [Download here](https://neo4j.com/download/) - Local development option (recommended for local-only usage)
   - **Docker** - Containerized local setup
-- **Google Cloud Platform Account** (for cloud-native features):
+  - **Neo4j Aura** (for cloud-native) - [Free trial available](https://neo4j.com/cloud/aura/) - Managed cloud database, perfect for production deployments
+
+**Optional (for cloud-native features only):**
+- **Google Cloud Platform Account:**
   - GCP Project with billing enabled
   - `gcloud` CLI installed and authenticated
   - Required APIs enabled (Cloud Functions, Cloud Run, Pub/Sub, BigQuery, Secret Manager, Cloud Scheduler)
@@ -215,7 +219,27 @@ python scripts/simulate_failure.py --vendor "Stripe" --duration 4
 
 > **Note:** Even for console-only output, Neo4j must be running/accessible because the simulation engine queries the graph database to calculate impact.
 
-#### ☁️ **Cloud-Native Approach (GCP Integration)**
+**Step 4: Use Web Dashboard (Optional)**
+
+For an interactive web interface to run simulations and view results:
+
+```bash
+# Install Node.js dependencies (requires Node.js 18.0+)
+cd dashboard
+npm install
+
+# Start the dashboard server
+npm start
+```
+
+Access the dashboard at `http://localhost:5000` to:
+- Run simulations through a web interface
+- View multi-dimensional impact results
+- See graph statistics and recommendations
+
+See `dashboard/README.md` and `dashboard/GETTING_STARTED.md` for detailed setup instructions.
+
+#### ☁️ **Cloud-Native Approach (GCP Integration - Optional)**
 
 **Option A: Use Deployed Cloud Functions (Recommended)**
 

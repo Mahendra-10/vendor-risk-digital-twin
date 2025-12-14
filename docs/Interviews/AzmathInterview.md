@@ -1,1 +1,0 @@
-"Current GRC tools are not perfect"

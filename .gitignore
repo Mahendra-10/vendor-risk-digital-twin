@@ -53,15 +53,18 @@ data/outputs/*.json
 data/outputs/*.csv
 !data/outputs/.gitkeep
 
+# Dashboard data outputs (may contain real project data)
+dashboard/data/outputs/
+!dashboard/data/outputs/.gitkeep
+
 # Research (sensitive customer data)
-research/customer_interviews/*.pdf
-research/customer_interviews/*.docx
-research/customer_interviews/transcripts/
+research/
 !research/**/.gitkeep
 
 # Jupyter
 .ipynb_checkpoints/
 *.ipynb_checkpoints
+# Note: Keep notebooks/analysis.ipynb (template only, no sensitive outputs)
 
 # Logs
 *.log

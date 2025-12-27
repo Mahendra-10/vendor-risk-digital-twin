@@ -77,12 +77,8 @@ htmlcov/
 docs/_build/
 site/
 
-# Exclude sensitive documentation folders
-docs/Interviews/
-docs/presentation/
-docs/proposals/
-docs/reports/
-docs/research/
+# Exclude entire docs directory (public repo)
+docs/
 
 # OS
 Thumbs.db
